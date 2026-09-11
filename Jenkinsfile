@@ -25,6 +25,10 @@ pipeline {
         DEPLOYED_URL   = 'http://localhost:8081'
     }
 
+    tools {
+        nodejs 'NODEJS'
+    }
+    
     stages {
         stage('Checkout') {
             steps {
