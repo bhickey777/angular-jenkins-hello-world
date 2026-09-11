@@ -112,6 +112,7 @@ pipeline {
 
                     cd mission-ui
                     npm ci
+                    npx playwright install --with-deps chromium
                     BASE_URL="$DEPLOYED_URL" npx playwright test
                 '''
             }
