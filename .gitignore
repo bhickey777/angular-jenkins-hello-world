@@ -1,0 +1,6 @@
+node_modules/
+dist/
+.angular/
+mission-ui/node_modules/
+mission-ui/playwright-report/
+mission-ui/test-results/
