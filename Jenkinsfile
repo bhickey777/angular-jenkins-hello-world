@@ -25,6 +25,10 @@ pipeline {
         DEPLOYED_URL   = 'http://localhost:8081'
     }
 
+    tools {
+        nodejs 'NodeJS'
+    }
+    
     stages {
         stage('Checkout') {
             steps {
@@ -112,7 +116,7 @@ pipeline {
 
                     cd mission-ui
                     npm ci
-                    npx playwright install --with-deps chromium
+                    npx playwright install chromium
                     BASE_URL="$DEPLOYED_URL" npx playwright test
                 '''
             }
