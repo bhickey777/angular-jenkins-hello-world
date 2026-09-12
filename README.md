@@ -40,18 +40,18 @@ The Playwright test checks that the deployed page contains:
 
 If you run into permission issues with creating the directory for the playwright cache:
 
-Fix ownership of just the Playwright cache:
+Fix ownership of just the Playwright cache: (if needed)
 
 most cases you are running as ec2-user
 
-sudo chown -R "$(whoami)":staff ~/<path to cache>/Caches/ms-playwright
+sudo chown -R "$(whoami)":staff /var/lib/jenkins/.cache/ms-playwright/chromium1234
 
 Then verify:
-ls -ld ~/<path to chache>/Caches/ms-playwright
-ls -ld ~<path to cache>/Caches/ms-playwright/__dirlock
+ls -ld /var/lib/jenkins/.cache/ms-playwright/chromium1234
+ls -ld /var/lib/jenkins/.cache/ms-playwright/chromium1234/__dirlock
 
 You should see your username as the owner rather than root.
 Then remove the stale lock if it still exists:
-rm -rf ~/<path to cache>/Caches/ms-playwright/__dirlock
+rm -rf /var/lib/jenkins/.cache/ms-playwright/chromium1234/__dirlock
 
 Retry your pipeline 
