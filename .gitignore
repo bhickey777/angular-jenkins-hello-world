@@ -9,3 +9,8 @@ mission-ui/test-results/
 /test-results/
 /playwright-report/
 /playwright/.cache/
+
+.vscode/
+.DS_Store
+
+
