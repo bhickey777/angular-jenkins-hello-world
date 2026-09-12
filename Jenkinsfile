@@ -19,7 +19,7 @@ pipeline {
 
         // Jenkins already uses host port 8080, so expose the application
         // on a different host port.
-        HOST_PORT      = '8081'
+        HOST_PORT      = '8082'
         CONTAINER_PORT = '8080'
 
         DEPLOYED_URL   = 'http://localhost:8081'
