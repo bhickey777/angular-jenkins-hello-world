@@ -37,6 +37,7 @@ If you run into permission issues with creating the directory for the playwright
 Fix ownership of just the Playwright cache:
 
 most cases you are running as ec2-user
+
 sudo chown -R "$(whoami)":staff ~/<path to cache>/Caches/ms-playwright
 
 Then verify:
