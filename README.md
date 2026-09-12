@@ -35,7 +35,8 @@ The Playwright test checks that the deployed page contains:
 If you run into permission issues with creating the directory for the playwright cache:
 
 Fix ownership of just the Playwright cache:
-## most cases you are running as ec2-user
+
+most cases you are running as ec2-user
 sudo chown -R "$(whoami)":staff ~/<path to cache>/Caches/ms-playwright
 
 Then verify:
@@ -46,4 +47,4 @@ You should see your username as the owner rather than root.
 Then remove the stale lock if it still exists:
 rm -rf ~/<path to cache>/Caches/ms-playwright/__dirlock
 
-## Retry your pipeline 
+Retry your pipeline 
