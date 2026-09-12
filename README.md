@@ -15,7 +15,7 @@ The Jenkins pipeline maps:
 ## Local Docker test
 
     docker build -t angular-jenkins-test .
-    docker run --rm -p 8081:8080 angular-jenkins-test
+    docker run --rm -p 8082:8080 angular-jenkins-test
 
 Open:
 

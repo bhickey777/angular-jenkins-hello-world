@@ -21,7 +21,30 @@
               }
             ],
             "styles": ["src/styles.css"]
-          }
+          },
+          "configurations": {
+            "production": {
+              "budgets": [
+                {
+                  "type": "initial",
+                  "maximumWarning": "500kB",
+                  "maximumError": "1MB"
+                },
+                {
+                  "type": "anyComponentStyle",
+                  "maximumWarning": "4kB",
+                  "maximumError": "8kB"
+                }
+              ],
+              "outputHashing": "all"
+            },
+            "development": {
+              "optimization": false,
+              "extractLicenses": false,
+              "sourceMap": true
+            }
+          },
+          "defaultConfiguration": "production"
         },
         "serve": {
           "builder": "@angular/build:dev-server",
@@ -34,8 +57,26 @@
             }
           },
           "defaultConfiguration": "development"
+        },
+        "test": {
+          "builder": "@angular/build:unit-test"
+        },
+        "e2e": {
+          "builder": "playwright-ng-schematics:playwright",
+          "options": {
+            "devServerTarget": "hello-world:serve"
+          },
+          "configurations": {
+            "production": {
+              "devServerTarget": "hello-world:serve:production"
+            }
+          }
         }
       }
     }
+  },
+  "cli": {
+    "analytics": "0b562b6a-8fc9-4a92-a0c9-d5c72c32e6fb",
+    "schematicCollections": ["@schematics/angular", "playwright-ng-schematics"]
   }
 }

@@ -4,3 +4,8 @@ dist/
 mission-ui/node_modules/
 mission-ui/playwright-report/
 mission-ui/test-results/
+
+# Playwright
+/test-results/
+/playwright-report/
+/playwright/.cache/
