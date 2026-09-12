@@ -1,6 +1,6 @@
 # Build Angular application
 FROM node:22-alpine AS build
-WORKDIR /app
+WORKDIR /hello-world
 
 COPY package*.json ./
 RUN npm install
