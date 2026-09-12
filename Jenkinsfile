@@ -14,15 +14,13 @@ pipeline {
     agent any
 
     environment {
-        APP_NAME       = 'leap-mission-service'
-        CONTAINER_NAME = 'leap-mission-service'
+        APP_NAME       = 'leap-angular-jenkins'
+        CONTAINER_NAME = 'leap-angular-jenkins-container'
 
-        // Jenkins already uses host port 8080, so expose the application
-        // on a different host port.
-        HOST_PORT      = '8081'
-        CONTAINER_PORT = '8080'
+        HOST_PORT      = '4201'
+        CONTAINER_PORT = '4200'
 
-        DEPLOYED_URL   = 'http://localhost:8081'
+        DEPLOYED_URL   = 'http://localhost:4201'
     }
 
     tools {
@@ -113,8 +111,6 @@ pipeline {
             steps {
                 sh '''
                     set -eu
-
-                    cd mission-ui
                     npm ci
                     npx playwright install chromium
                     BASE_URL="$DEPLOYED_URL" npx playwright test

@@ -12,6 +12,14 @@ The Jenkins pipeline maps:
 
     8081:8080
 
+## Local CLI Build and Test
+npm install
+ng build
+ng test
+ng serve
+ng e2e
+
+
 ## Local Docker test
 
     docker build -t angular-jenkins-test .
