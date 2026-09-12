@@ -23,6 +23,12 @@ Open:
 
 ## Jenkins
 
+login to your linux virtual and install nodeJS (note: this needs to be installed in jenkins as well)
+sudo dnf install -y nodejs22
+
+install playwright test 
+npm install @playwright/test
+
 Place the converted `Jenkinsfile` at the repository root. The project includes
 `mission-ui` because the sample Jenkins pipeline has a Playwright Acceptance Tests
 stage that changes into that directory.
