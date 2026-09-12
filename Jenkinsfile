@@ -17,10 +17,8 @@ pipeline {
         APP_NAME       = 'leap-angular-jenkins'
         CONTAINER_NAME = 'leap-angular-jenkins-container'
 
-        // Jenkins already uses host port 8080, so expose the application
-        // on a different host port.
-        HOST_PORT      = '8082'
-        CONTAINER_PORT = '8080'
+        HOST_PORT      = '4201'
+        CONTAINER_PORT = '4200'
 
         DEPLOYED_URL   = 'http://localhost:8081'
     }
