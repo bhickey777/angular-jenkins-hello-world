@@ -112,6 +112,7 @@ pipeline {
                 sh '''
                     set -eu
                     npm ci
+                    cd hello-world
                     npx playwright install chromium
                     BASE_URL="$DEPLOYED_URL" npx playwright test
                 '''
