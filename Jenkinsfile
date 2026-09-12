@@ -20,7 +20,7 @@ pipeline {
         HOST_PORT      = '4201'
         CONTAINER_PORT = '4200'
 
-        DEPLOYED_URL   = 'http://localhost:8081'
+        DEPLOYED_URL   = 'http://localhost:4201'
     }
 
     tools {
