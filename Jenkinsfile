@@ -181,6 +181,7 @@ pipeline {
                     docker exec hello-world-auth npm test -- --runInBand
                     
                     echo "========== TESTING HELLO WORLD =========="
+                    docker exec hello-world npm test -- --runInBand
                     cd hello-world
                     npm ci
                     
