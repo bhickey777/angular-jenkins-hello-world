@@ -20,8 +20,6 @@ services:
     ports:
       - "5200:8080"
 
-      services:
-
   postgres:
     image: postgres:18
     container_name: enterprise-postgres
