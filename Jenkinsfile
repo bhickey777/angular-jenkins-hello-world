@@ -26,6 +26,7 @@ pipeline {
         IMAGE_TAG = "${BUILD_NUMBER}"
 
         DEPLOYED_HW_URL='http://localhost:4200'
+        DEPLOYED_HWR_URL='http://localhost:5200'
     }
 
     tools {
@@ -57,6 +58,7 @@ pipeline {
             steps {
                 sh '''
                     docker compose build hello-world
+                    docker compose build hello-world-rpt
                     echo "$IMAGE_TAG" > image-tag.txt
                 '''
             }
@@ -71,11 +73,12 @@ pipeline {
                    export IMAGE_TAG
 
                    echo "Deploying hello-world:$IMAGE_TAG"
-
                    docker compose up -d --no-build hello-world
 
-                   echo "Application container started:"
+                   echo "Deploying hello-world-rpt:$IMAGE_TAG"
+                   docker compose up -d --no-build hello-world-rpt
 
+                   echo "Application container started:"
 
                    docker compose ps 
                 '''
@@ -99,6 +102,9 @@ pipeline {
                    echo "Checking Hello World..."
                    curl --fail http://localhost:4200/
 
+                   echo "Checking Hello World Reporting..."
+                   curl --fail http://localhost:5200/
+
 
                    echo "All applications are responding."
                  '''
@@ -118,6 +124,13 @@ pipeline {
                     
                     npx playwright install chromium
                     BASE_URL="$DEPLOYED_HW_URL" npx playwright test
+
+                    echo "========== TESTING HELLO WORLD REPORTING =========="
+                    cd hello-world-rpt
+                    npm ci
+                    
+                    npx playwright install chromium
+                    BASE_URL="$DEPLOYED_HWR_URL" npx playwright test
                 '''
             }
         }
@@ -136,6 +149,9 @@ pipeline {
 
                   echo "========== HELLO WORLD LOGS =========="
                   docker compose logs --tail=100 hello-world || true
+
+                  echo "========== HELLO WORLD REPORTING LOGS =========="
+                  docker compose logs --tail=100 hello-world-rpt || true
 
                   echo "========== TEARDOWN =========="
                   docker compose down || true
