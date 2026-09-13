@@ -137,7 +137,8 @@ pipeline {
                   echo "========== HELLO WORLD LOGS =========="
                   docker compose logs --tail=100 hello-world || true
 
-
+                  echo "========== TEARDOWN =========="
+                  docker compose down || true
                '''
         }
     }
