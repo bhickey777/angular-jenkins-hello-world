@@ -8,4 +8,14 @@ services:
       context: ./hello-world
       dockerfile: Dockerfile
     ports:
-      - "4200:80"
+      - "4200:8080"
+
+  hello-world-rpt:
+    image: hello-world-rpt:${IMAGE_TAG:?IMAGE_TAG must be set}
+    container_name: hello-world-rpt
+    restart: unless-stopped
+    build:
+      context: ./hello-world-rpt
+      dockerfile: Dockerfile
+    ports:
+      - "5200:8080"
