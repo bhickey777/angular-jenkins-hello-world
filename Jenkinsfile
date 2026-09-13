@@ -21,6 +21,8 @@ pipeline {
         DB_HOST = 'postgres'
         DB_PORT = '5432'
         DB_NAME = 'paysprint'
+        DB_USER = 'postgres'
+        DB_PASSWORD = 'ROmans23&'
 
         // Docker image tag
         IMAGE_TAG = "${BUILD_NUMBER}"
