@@ -25,7 +25,7 @@ pipeline {
         // Docker image tag
         IMAGE_TAG = "${BUILD_NUMBER}"
 
-        DEPLOYED_URL=http://localhost:4200
+        DEPLOYED_HW_URL='http://localhost:4200'
     }
 
     tools {
@@ -116,7 +116,7 @@ pipeline {
                     npm ci
                     
                     npx playwright install chromium
-                    BASE_URL="$DEPLOYED_URL" npx playwright test
+                    BASE_URL="$DEPLOYED_HW_URL" npx playwright test
                 '''
             }
         }
