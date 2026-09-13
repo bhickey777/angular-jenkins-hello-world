@@ -22,7 +22,7 @@ pipeline {
         DB_PORT = '5432'
         DB_NAME = 'helloworld_wealth'
         DB_USER = 'postgres'
-        DB_PASSWORD = 'ROmans23&'
+        DB_PASSWORD = 'admin'
 
         // Docker image tag
         IMAGE_TAG = "${BUILD_NUMBER}"
