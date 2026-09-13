@@ -4,8 +4,8 @@ A minimal Angular 20 application designed to test the Linux/Docker Jenkins pipel
 
 ## Expected deployment
 
-- Jenkins: host port `4200`
-- Angular application: host port `4201`
+- Jenkins: host port `4201`
+- Angular application: host port `4200`
 - Angular/nginx container: port `4200`
 
 The Jenkins pipeline maps:
@@ -22,8 +22,8 @@ ng e2e
 
 ## Local Docker test
 
-    docker build -t hello-world-test .
-    docker run --rm -p 4201:4200 hello-world-test
+   docker build -t hello-world-rpt-test .
+   docker run --rm -p 4200:8080 hello-world-rpt-test
 
 Open:
 
