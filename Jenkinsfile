@@ -181,9 +181,10 @@ pipeline {
                     docker exec hello-world-auth npm test -- --runInBand
                     
                     echo "========== TESTING HELLO WORLD =========="
-                    docker exec hello-world npm test -- --runInBand
                     cd hello-world
                     npm ci
+                    
+                    docker exec hello-world npm test -- --runInBand
                     
                     npx playwright install chromium
                     PLAYWRIGHT_TEST_BASE_URL="$DEPLOYED_HW_URL" npx playwright test
