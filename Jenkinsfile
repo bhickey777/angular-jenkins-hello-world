@@ -112,6 +112,7 @@ pipeline {
                 sh '''
                     set -eu
 
+                    echo "========== TESTING HELLO WORLD =========="
                     cd hello-world
                     npm ci
                     
