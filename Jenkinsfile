@@ -18,7 +18,7 @@ pipeline {
         SPRING_PROFILES_ACTIVE = 'test'
 
         // Example service configuration
-        DB_HOST: 'localhost'
+        DB_HOST = 'localhost'
         DB_PORT = '5432'
         DB_NAME = 'helloworld_wealth'
         DB_USER = 'postgres'
