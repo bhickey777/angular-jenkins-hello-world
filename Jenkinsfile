@@ -24,6 +24,8 @@ pipeline {
 
         // Docker image tag
         IMAGE_TAG = "${BUILD_NUMBER}"
+
+        DEPLOYED_HW_URL='http://localhost:4200'
     }
 
     tools {
@@ -37,19 +39,25 @@ pipeline {
             }
         }
 
-        stage('Build Docker Images') {
+        stage('Config Pipeline') {
             steps {
-                sh '''
+                
+               script {
                     env.IMAGE_TAG = sh(
-                      script: 'git rev-parse --short HEAD',
-                      returnStdout: true
+                        script: 'git rev-parse --short HEAD',
+                        returnStdout: true
                     ).trim()
 
                     echo "Building hello-world:${env.IMAGE_TAG}"
-
+               }
+            }
+        }
+        
+        stage('Build Docker Images') {
+            steps {
                 sh '''
-                  docker compose build hello-world
-                  echo "$IMAGE_TAG" > image-tag.txt
+                    docker compose build hello-world
+                    echo "$IMAGE_TAG" > image-tag.txt
                 '''
             }
         }
@@ -104,11 +112,12 @@ pipeline {
                 sh '''
                     set -eu
 
+                    echo "========== TESTING HELLO WORLD =========="
                     cd hello-world
                     npm ci
                     
                     npx playwright install chromium
-                    BASE_URL="$DEPLOYED_URL" npx playwright test
+                    BASE_URL="$DEPLOYED_HW_URL" npx playwright test
                 '''
             }
         }
@@ -128,7 +137,8 @@ pipeline {
                   echo "========== HELLO WORLD LOGS =========="
                   docker compose logs --tail=100 hello-world || true
 
-
+                  echo "========== TEARDOWN =========="
+                  docker compose down || true
                '''
         }
     }
