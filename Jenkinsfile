@@ -46,6 +46,11 @@ pipeline {
 
                     echo "Workspace contents:"
                     ls -la
+
+                    echo "==========DB CONNECTION =========="
+                    echo "$DB_NAME"
+                    echo "$DB_USER"
+                    
                 '''
             }
         }
