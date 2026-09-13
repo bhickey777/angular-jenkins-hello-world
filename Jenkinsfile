@@ -169,15 +169,20 @@ pipeline {
     }
 
     post {
-        steps {
-              sh '''
-                  docker compose down -d postgres
-             '''
+        always {
+            sh '''
+                echo "Stopping Docker containers..."
+                docker compose down
+            '''
+        }
+
+        success {
+            echo 'HELLO WORLD Pipeline succeeded.'
         }
         
         failure {
                sh '''
-                  echo "Pipeline failed."
+                  echo "HELLO WORLD Pipeline failed."
 
                   IMAGE_TAG=$(cat image-tag.txt 2>/dev/null || true)
                   export IMAGE_TAG
