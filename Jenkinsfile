@@ -29,6 +29,7 @@ pipeline {
 
         DEPLOYED_HW_URL='http://localhost:4200'
         DEPLOYED_HWR_URL='http://localhost:5200'
+        DEPLOYED_HWA_URL='htttps://localhost:3000'
     }
 
     tools {
@@ -110,6 +111,7 @@ pipeline {
                 sh '''
                     docker compose build hello-world
                     docker compose build hello-world-rpt
+                    docker compose build hello-world-auth
                     echo "$IMAGE_TAG" > image-tag.txt
                 '''
             }
@@ -128,6 +130,9 @@ pipeline {
 
                    echo "Deploying hello-world-rpt:$IMAGE_TAG"
                    docker compose up -d --no-build hello-world-rpt
+
+                   echo "Deploying hello-world-auth:$IMAGE_TAG"
+                   docker compose up -d --no-build hello-world-auth
 
                    echo "Application container started:"
 
@@ -156,6 +161,9 @@ pipeline {
                    echo "Checking Hello World Reporting..."
                    curl --fail http://localhost:5200/
 
+                   echo "Checking Hello World Authorization..."
+                   curl --fail http://localhost:3000/
+
 
                    echo "All applications are responding."
                  '''
@@ -169,6 +177,9 @@ pipeline {
                 sh '''
                     set -eu
 
+                    echo "========== TESTING HELLO WORLD AUTH =========="
+                    docker exec hello-world-auth npm test -- --runInBand
+                    
                     echo "========== TESTING HELLO WORLD =========="
                     cd hello-world
                     npm ci
@@ -214,6 +225,9 @@ pipeline {
 
                   echo "========== HELLO WORLD REPORTING LOGS =========="
                   docker compose logs --tail=100 hello-world-rpt || true
+
+                  echo "========== HELLO WORLD AUTH LOGS =========="
+                  docker compose logs --tail=100 hello-world-auth || true
 
                   echo "========== TEARDOWN =========="
                   docker compose down || true
