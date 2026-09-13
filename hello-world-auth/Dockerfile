@@ -14,13 +14,19 @@ RUN npm run build
 # Stage 2: run. Only production dependencies and the compiled dist/ cross
 # the boundary between stages - no TypeScript compiler, no test files, no
 # dev dependencies ship in the final image.
-FROM node:20-alpine
+FROM nginx:27-alpine
 WORKDIR /app
 
 COPY package.json package-lock.json ./
 RUN npm install --omit=dev
 
+COPY . .
+
+FROM nginx:1.27-alpine
+COPY nginx.conf /etc/nginx/conf.d/default.conf
+
 COPY --from=build /app/dist ./dist
 
 EXPOSE 3000
-CMD ["node", "dist/main.js"]
+
+CMD ["nginx", "-g", "daemon off;"]
