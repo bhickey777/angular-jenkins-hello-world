@@ -14,13 +14,16 @@ pipeline {
     agent any
 
     environment {
-        APP_NAME       = 'leap-angular-jenkins'
-        CONTAINER_NAME = 'leap-angular-jenkins-container'
+        DEPLOY_ENV = 'test'
+        SPRING_PROFILES_ACTIVE = 'test'
 
-        HOST_PORT      = '4201'
-        CONTAINER_PORT = '4200'
+        // Example service configuration
+        DB_HOST = 'postgres'
+        DB_PORT = '5432'
+        DB_NAME = 'paysprint'
 
-        DEPLOYED_URL   = 'http://localhost:4201'
+        // Docker image tag
+        IMAGE_TAG = "${BUILD_NUMBER}"
     }
 
     tools {
@@ -34,18 +37,19 @@ pipeline {
             }
         }
 
-        stage('Build Docker Image') {
+        stage('Build Docker Images') {
             steps {
                 sh '''
-                    set -eu
+                    env.IMAGE_TAG = sh(
+                      script: 'git rev-parse --short HEAD',
+                      returnStdout: true
+                    ).trim()
 
-                    IMAGE_TAG=$(git rev-parse --short HEAD)
-                    IMAGE_NAME="$APP_NAME:$IMAGE_TAG"
+                    echo "Building hello-world:${env.IMAGE_TAG}"
 
-                    echo "Building $IMAGE_NAME"
-                    docker build -t "$IMAGE_NAME" .
-
-                    echo "$IMAGE_TAG" > image-tag.txt
+                sh '''
+                  docker compose build hello-world
+                  echo "$IMAGE_TAG" > image-tag.txt
                 '''
             }
         }
@@ -53,26 +57,19 @@ pipeline {
         stage('Deploy') {
             steps {
                 sh '''
-                    set -eu
+                   set -eu
 
-                    IMAGE_TAG=$(cat image-tag.txt)
-                    IMAGE_NAME="$APP_NAME:$IMAGE_TAG"
+                   IMAGE_TAG=$(cat image-tag.txt)
+                   export IMAGE_TAG
 
-                    echo "Deploying $IMAGE_NAME"
+                   echo "Deploying hello-world:$IMAGE_TAG"
 
-                    # Remove the previous application container if it exists.
-                    if docker ps -a --format '{{.Names}}' | grep -qx "$CONTAINER_NAME"; then
-                        docker rm -f "$CONTAINER_NAME"
-                    fi
+                   docker compose up -d --no-build hello-world
 
-                    docker run -d \\
-                        --name "$CONTAINER_NAME" \\
-                        --restart unless-stopped \\
-                        -p "$HOST_PORT:$CONTAINER_PORT" \\
-                        "$IMAGE_NAME"
+                   echo "Application container started:"
 
-                    echo "Application container started:"
-                    docker ps --filter "name=$CONTAINER_NAME"
+
+                   docker compose ps 
                 '''
             }
         }
@@ -80,28 +77,23 @@ pipeline {
         stage('Verify Deployment') {
             steps {
                 sh '''
-                    set -eu
+                   set -eu
 
-                    echo "Waiting for application at $DEPLOYED_URL"
+                   IMAGE_TAG=$(cat image-tag.txt)
+                   export IMAGE_TAG
 
-                    ATTEMPT=1
-                    MAX_ATTEMPTS=30
+                   echo "Waiting for applications to start..."
+                   sleep 10
 
-                    until curl --fail --silent --show-error "$DEPLOYED_URL" >/dev/null 2>&1; do
-                        if [ "$ATTEMPT" -ge "$MAX_ATTEMPTS" ]; then
-                            echo "Application did not become available."
-                            echo "Container logs:"
-                            docker logs "$CONTAINER_NAME" || true
-                            exit 1
-                        fi
+                   echo "Checking container status..."
+                   docker compose ps
 
-                        echo "Attempt $ATTEMPT/$MAX_ATTEMPTS - application not ready yet"
-                        ATTEMPT=$((ATTEMPT + 1))
-                        sleep 2
-                    done
+                   echo "Checking Hello World..."
+                   curl --fail http://localhost:4200/
 
-                    echo "Application is available at $DEPLOYED_URL"
-                '''
+
+                   echo "All applications are responding."
+                 '''
             }
         }
 
@@ -124,13 +116,20 @@ pipeline {
 
     post {
         failure {
-            sh '''
-                echo "Pipeline failed. Current application container status:"
-                docker ps -a --filter "name=$CONTAINER_NAME" || true
+               sh '''
+                  echo "Pipeline failed."
 
-                echo "Application container logs:"
-                docker logs --tail 100 "$CONTAINER_NAME" || true
-            '''
+                  IMAGE_TAG=$(cat image-tag.txt 2>/dev/null || true)
+                  export IMAGE_TAG
+
+                  echo "========== CONTAINER STATUS =========="
+                  docker compose ps -a || true
+
+                  echo "========== HELLO WORLD LOGS =========="
+                  docker compose logs --tail=100 hello-world || true
+
+
+               '''
         }
     }
 }

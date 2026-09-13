@@ -1,0 +1,11 @@
+services:
+
+  hello-world:
+    image: hello-world:${IMAGE_TAG}
+    container_name: hello-world
+    restart: unless-stopped
+    build:
+      context: ./hello-world
+      dockerfile: Dockerfile
+    ports:
+      - "4200:80
