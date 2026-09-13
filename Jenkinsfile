@@ -156,13 +156,13 @@ pipeline {
                    docker compose ps
 
                    echo "Checking Hello World..."
-                   curl --fail "$DEPLOYED_HW_UR"
+                   curl --fail http://localhost:4200
 
                    echo "Checking Hello World Reporting..."
-                   curl --fail "$DEPLOYED_HWR_UR"
+                   curl --fail http://localhost:5200
 
                    echo "Checking Hello World Authorization..."
-                   curl --fail "$DEPLOYED_HWA_UR"
+                   curl --fail http://localhost:3000/api
 
 
                    echo "All applications are responding."
