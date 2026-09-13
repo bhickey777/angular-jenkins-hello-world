@@ -24,6 +24,8 @@ pipeline {
 
         // Docker image tag
         IMAGE_TAG = "${BUILD_NUMBER}"
+
+        DEPLOYED_URL=http://localhost:4200
     }
 
     tools {
