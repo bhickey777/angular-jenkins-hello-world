@@ -20,7 +20,7 @@ pipeline {
         // Example service configuration
         DB_HOST = 'postgres'
         DB_PORT = '5432'
-        DB_NAME = 'paysprint'
+        DB_NAME = 'helloworld_wealth'
         DB_USER = 'postgres'
         DB_PASSWORD = 'ROmans23&'
 
