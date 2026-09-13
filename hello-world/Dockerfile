@@ -6,6 +6,11 @@ COPY package*.json ./
 RUN npm ci
 
 COPY . .
+
+# Run Angular unit tests
+RUN npm test -- --watch=false
+
+# Run Angular build
 RUN npm run build
 
 # Serve the compiled application on container port 8080
