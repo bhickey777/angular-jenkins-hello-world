@@ -15,12 +15,6 @@ RUN npm run build
 # the boundary between stages - no TypeScript compiler, no test files, no
 # dev dependencies ship in the final image.
 FROM nginx:27-alpine
-WORKDIR /app
-
-COPY package.json package-lock.json ./
-RUN npm install --omit=dev
-
-COPY . .
 
 FROM nginx:1.27-alpine
 COPY nginx.conf /etc/nginx/conf.d/default.conf
