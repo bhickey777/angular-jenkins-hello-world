@@ -6,7 +6,7 @@ A minimal Angular 21 application designed to assist with hello world reporting
 
 - Jenkins: host port `5201`
 - Angular application: host port `5200`
-- Angular/nginx container: port `80`
+- Angular/nginx container: port `8080`
 
 The Jenkins pipeline maps:
 
