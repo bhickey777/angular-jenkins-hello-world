@@ -67,7 +67,7 @@
         "e2e": {
           "builder": "playwright-ng-schematics:playwright",
           "options": {
-            "devServerTarget": "hello-world:serve"
+            "devServerTarget": "hello-world-rpt:serve"
           },
           "configurations": {
             "production": {
