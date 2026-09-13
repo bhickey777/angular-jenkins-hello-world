@@ -21,7 +21,7 @@ services:
       - "5200:8080"
 
   postgres:
-    image: postgres_helloworld:18
+    image: postgres:18
     container_name: enterprise-postgres
     environment:
       POSTGRES_HOST: "${DB_HOST}"
