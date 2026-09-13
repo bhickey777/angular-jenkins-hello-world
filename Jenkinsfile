@@ -46,10 +46,9 @@ pipeline {
                     ).trim()
 
                     echo "Building hello-world:${env.IMAGE_TAG}"
-
-                sh '''
-                  docker compose build hello-world
-                  echo "$IMAGE_TAG" > image-tag.txt
+                    
+                    docker compose build hello-world
+                    echo "$IMAGE_TAG" > image-tag.txt
                 '''
             }
         }
