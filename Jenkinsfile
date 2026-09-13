@@ -63,6 +63,22 @@ pipeline {
                }
             }
         }
+
+        stage('Start Database and Initialize') {
+            steps {
+                sh '''
+                    docker compose up -d postgres
+
+                    docker compose exec -T postgres \
+                        psql -U postgres -d "$DB_NAME" \
+                        -c "DROP SCHEMA public CASCADE; CREATE SCHEMA public;"
+
+                    docker compose exec -T postgres \
+                        psql -U "$DB_USER" -d "$DB_NAME" \
+                        < ./test/data/enterprise-schema.sql
+                '''
+            }
+        }
         
         stage('Build Docker Images') {
             steps {
