@@ -69,6 +69,12 @@ pipeline {
                 sh '''
                     docker compose up -d postgres
 
+                    echo "Waiting for PostgreSQL..."
+                    until docker compose exec -T postgres \
+                        pg_isready -U "$DB_USER" -d "$DB_NAME"
+                    do
+                        sleep 2
+                    done
                     docker compose exec -T postgres \
                         psql -U postgres -d "$DB_NAME" \
                         -c "DROP SCHEMA public CASCADE; CREATE SCHEMA public;"
