@@ -100,7 +100,7 @@ pipeline {
 
                     docker compose exec -T postgres \
                       psql -U "$DB_USER" -d "$DB_NAME" \
-                      -c "SELECT COUNT(*) FROM customer;"
+                      -c "SELECT COUNT(*) FROM clients;"
                 '''
             }
         }
