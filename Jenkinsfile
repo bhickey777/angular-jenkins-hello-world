@@ -169,6 +169,12 @@ pipeline {
     }
 
     post {
+        steps {
+              sh '''
+                  docker compose down -d postgres
+             '''
+        }
+        
         failure {
                sh '''
                   echo "Pipeline failed."
