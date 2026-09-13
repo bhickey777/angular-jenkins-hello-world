@@ -38,13 +38,16 @@ pipeline {
         }
 
         stage('Config Pipeline') {
-            script {
+            steps {
+                
+               script {
                     env.IMAGE_TAG = sh(
                         script: 'git rev-parse --short HEAD',
                         returnStdout: true
                     ).trim()
 
                     echo "Building hello-world:${env.IMAGE_TAG}"
+               }
             }
         }
         
