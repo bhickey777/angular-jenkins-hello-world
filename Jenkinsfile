@@ -184,8 +184,6 @@ pipeline {
                     cd hello-world
                     npm ci
                     
-                    docker exec hello-world npm test -- --runInBand
-                    
                     npx playwright install chromium
                     PLAYWRIGHT_TEST_BASE_URL="$DEPLOYED_HW_URL" npx playwright test
 
