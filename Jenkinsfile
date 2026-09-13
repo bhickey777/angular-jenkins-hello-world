@@ -19,6 +19,7 @@ pipeline {
 
         // Example service configuration
         DB_HOST = 'postgres'
+        DB_IP = "loclhost"
         DB_PORT = '5432'
         DB_NAME = 'helloworld_wealth'
         DB_USER = 'postgres'
