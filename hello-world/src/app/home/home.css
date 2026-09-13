@@ -1,0 +1,374 @@
+:host {
+  display: block;
+}
+
+
+/* =========================
+   PAGE
+   ========================= */
+
+.home-page {
+  min-height: calc(100vh - 64px);
+  background-color: #121212;
+  color: #f5f5f5;
+}
+
+
+/* =========================
+   HERO / BANNER
+   ========================= */
+
+.hero {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+
+  gap: 60px;
+
+  min-height: 500px;
+  padding: 70px 8%;
+
+  background:
+    linear-gradient(
+      135deg,
+      #121212 0%,
+      #181c20 55%,
+      #1e1e1e 100%
+    );
+
+  box-sizing: border-box;
+}
+
+
+.hero-content {
+  max-width: 650px;
+}
+
+
+.eyebrow {
+  margin-bottom: 18px;
+
+  color: #64b5f6;
+
+  font-size: 0.85rem;
+  font-weight: bold;
+  letter-spacing: 3px;
+}
+
+
+.hero h1 {
+  margin: 0 0 24px;
+
+  color: #f5f5f5;
+
+  font-size: 3.5rem;
+  line-height: 1.1;
+}
+
+
+.hero h1 span {
+  color: #64b5f6;
+}
+
+
+.hero-description {
+  max-width: 580px;
+
+  margin-bottom: 32px;
+
+  color: #bdbdbd;
+
+  font-size: 1.15rem;
+  line-height: 1.7;
+}
+
+
+/* =========================
+   HERO BUTTONS
+   ========================= */
+
+.hero-actions {
+  display: flex;
+  gap: 16px;
+}
+
+
+.primary-button,
+.secondary-button {
+  display: inline-block;
+
+  padding: 13px 26px;
+
+  border-radius: 5px;
+
+  font-weight: bold;
+  text-decoration: none;
+
+  cursor: pointer;
+}
+
+
+.primary-button {
+  background-color: #64b5f6;
+  color: #121212;
+}
+
+
+.primary-button:hover {
+  background-color: #90caf9;
+}
+
+
+.secondary-button {
+  color: #f5f5f5;
+
+  background-color: transparent;
+
+  border: 1px solid #3a3a3a;
+}
+
+
+.secondary-button:hover {
+  background-color: #252525;
+  border-color: #64b5f6;
+}
+
+
+/* =========================
+   MARKET CARD
+   ========================= */
+
+.market-card {
+  width: 100%;
+  max-width: 420px;
+
+  padding: 24px;
+
+  background-color: #1e1e1e;
+
+  border: 1px solid #3a3a3a;
+  border-radius: 10px;
+
+  box-sizing: border-box;
+}
+
+
+.market-card-header {
+  display: flex;
+  justify-content: space-between;
+
+  padding-bottom: 18px;
+  margin-bottom: 5px;
+
+  color: #f5f5f5;
+
+  border-bottom: 1px solid #3a3a3a;
+
+  font-weight: bold;
+}
+
+
+.market-status {
+  color: #64b5f6;
+
+  font-size: 0.75rem;
+  letter-spacing: 1px;
+}
+
+
+.market-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+
+  padding: 18px 0;
+
+  border-bottom: 1px solid #2c2c2c;
+}
+
+
+.market-item:last-child {
+  border-bottom: none;
+}
+
+
+.market-item div {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+
+.market-item span {
+  color: #8e8e8e;
+
+  font-size: 0.85rem;
+}
+
+
+.market-price {
+  text-align: right;
+}
+
+
+.market-price .positive {
+  color: #66bb6a;
+}
+
+
+.market-price .negative {
+  color: #ef5350;
+}
+
+
+/* =========================
+   SERVICES
+   ========================= */
+
+.services {
+  padding: 70px 8% 90px;
+
+  background-color: #121212;
+}
+
+
+.section-heading {
+  margin-bottom: 40px;
+}
+
+
+.section-heading p {
+  margin-bottom: 8px;
+
+  color: #64b5f6;
+
+  font-size: 0.8rem;
+  font-weight: bold;
+  letter-spacing: 2px;
+}
+
+
+.section-heading h2 {
+  margin: 0;
+
+  color: #f5f5f5;
+
+  font-size: 2rem;
+}
+
+
+.service-grid {
+  display: grid;
+
+  grid-template-columns: repeat(3, 1fr);
+
+  gap: 24px;
+}
+
+
+.service-card {
+  padding: 28px;
+
+  background-color: #1e1e1e;
+
+  border: 1px solid #3a3a3a;
+  border-radius: 8px;
+
+  transition:
+    transform 0.2s ease,
+    border-color 0.2s ease;
+}
+
+
+.service-card:hover {
+  transform: translateY(-4px);
+
+  border-color: #64b5f6;
+}
+
+
+.service-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  width: 42px;
+  height: 42px;
+
+  margin-bottom: 22px;
+
+  color: #64b5f6;
+  background-color: #252525;
+
+  border-radius: 6px;
+
+  font-size: 1.3rem;
+  font-weight: bold;
+}
+
+
+.service-card h3 {
+  margin: 0 0 12px;
+
+  color: #f5f5f5;
+
+  font-size: 1.25rem;
+}
+
+
+.service-card p {
+  min-height: 75px;
+
+  margin-bottom: 20px;
+
+  color: #bdbdbd;
+
+  line-height: 1.6;
+}
+
+
+.service-card a {
+  color: #64b5f6;
+
+  text-decoration: none;
+  font-weight: bold;
+
+  cursor: pointer;
+}
+
+
+.service-card a:hover {
+  color: #90caf9;
+}
+
+
+/* =========================
+   RESPONSIVE
+   ========================= */
+
+@media (max-width: 900px) {
+
+  .hero {
+    flex-direction: column;
+
+    align-items: flex-start;
+
+    padding: 50px 6%;
+  }
+
+
+  .hero h1 {
+    font-size: 2.7rem;
+  }
+
+
+  .market-card {
+    max-width: 100%;
+  }
+
+
+  .service-grid {
+    grid-template-columns: 1fr;
+  }
+
+}
