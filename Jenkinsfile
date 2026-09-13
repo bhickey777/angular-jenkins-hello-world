@@ -37,6 +37,14 @@ pipeline {
         stage('Checkout') {
             steps {
                 checkout scm
+
+                sh '''
+                    echo "Current directory:"
+                    pwd
+
+                    echo "Workspace contents:"
+                    ls -la
+                '''
             }
         }
 
