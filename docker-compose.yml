@@ -19,3 +19,20 @@ services:
       dockerfile: Dockerfile
     ports:
       - "5200:8080"
+
+      services:
+
+  postgres:
+    image: postgres:18
+    container_name: enterprise-postgres
+    environment:
+      POSTGRES_DB: enterprise
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    ports:
+      - "5432:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d enterprise"]
+      interval: 2s
+      timeout: 5s
+      retries: 15
