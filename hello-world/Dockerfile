@@ -5,6 +5,9 @@ WORKDIR /hello-world
 COPY package*.json ./
 RUN npm ci
 
+# Run Angular unit tests
+RUN npm test -- --watch=false
+
 COPY . .
 RUN npm run build
 
