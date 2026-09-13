@@ -11,7 +11,7 @@ RUN npm run build
 # Serve the compiled application on container port 8080
 FROM nginx:1.27-alpine
 COPY nginx.conf /etc/nginx/conf.d/default.conf
-COPY --from=build /app/dist/browser /usr/share/nginx/html
+COPY --from=build /hello-world/dist/hello-world/browser /usr/share/nginx/html
 
 EXPOSE 80
 
