@@ -96,7 +96,7 @@ pipeline {
                 sh '''
                     docker compose exec -T postgres \
                       psql -U "$DB_USER" -d "$DB_NAME" \
-                      -c "\dt"
+                      -c "\\dt"
 
                     docker compose exec -T postgres \
                       psql -U "$DB_USER" -d "$DB_NAME" \
