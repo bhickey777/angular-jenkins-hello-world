@@ -1,6 +1,7 @@
 # Build Angular application
 FROM node:22-alpine AS build
-WORKDIR /hello-world
+
+WORKDIR /hello-world-rpt
 
 COPY package*.json ./
 RUN npm install
@@ -8,10 +9,13 @@ RUN npm install
 COPY . .
 RUN npm run build
 
-# Serve the compiled application on container port 8080
+
+# Serve compiled Angular application with nginx
 FROM nginx:1.27-alpine
+
 COPY nginx.conf /etc/nginx/conf.d/default.conf
-COPY --from=build /hello-world/dist/hello-world/browser /usr/share/nginx/html
+
+COPY --from=build /hello-world-rpt/dist/hello-world-rpt/browser /usr/share/nginx/html
 
 EXPOSE 8080
 
