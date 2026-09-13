@@ -6,7 +6,7 @@ A minimal Angular 20 application designed to test the Linux/Docker Jenkins pipel
 
 - Jenkins: host port `4201`
 - Angular application: host port `4200`
-- Angular/nginx container: port `4200`
+- Angular/nginx container: port `8080`
 
 The Jenkins pipeline maps:
 
