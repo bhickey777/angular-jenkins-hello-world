@@ -131,14 +131,14 @@ pipeline {
                     npm ci
                     
                     npx playwright install chromium
-                    BASE_URL="$DEPLOYED_HW_URL" npx playwright test
+                    PLAYWRIGHT_TEST_BASE_URL="$DEPLOYED_HW_URL" npx playwright test
 
                     echo "========== TESTING HELLO WORLD REPORTING =========="
                     cd ../hello-world-rpt
                     npm ci
                     
                     npx playwright install chromium
-                    BASE_URL="$DEPLOYED_HWR_URL" npx playwright test
+                    PLAYWRIGHT_TEST_BASE_URL="$DEPLOYED_HWR_URL" npx playwright test
                 '''
             }
         }
