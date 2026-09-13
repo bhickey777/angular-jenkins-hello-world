@@ -29,7 +29,7 @@ pipeline {
 
         DEPLOYED_HW_URL='http://localhost:4200'
         DEPLOYED_HWR_URL='http://localhost:5200'
-        DEPLOYED_HWA_URL='htttps://localhost:3000'
+        DEPLOYED_HWA_URL='http://localhost:3000'
     }
 
     tools {
@@ -156,13 +156,13 @@ pipeline {
                    docker compose ps
 
                    echo "Checking Hello World..."
-                   curl --fail http://localhost:4200/
+                   curl --fail "$DEPLOYED_HW_UR"
 
                    echo "Checking Hello World Reporting..."
-                   curl --fail http://localhost:5200/
+                   curl --fail "$DEPLOYED_HWR_UR"
 
                    echo "Checking Hello World Authorization..."
-                   curl --fail http://localhost:3000/
+                   curl --fail "$DEPLOYED_HWA_UR"
 
 
                    echo "All applications are responding."
