@@ -37,16 +37,20 @@ pipeline {
             }
         }
 
-        stage('Build Docker Images') {
-            steps {
-                sh '''
+        stage('Config Pipeline') {
+            script {
                     env.IMAGE_TAG = sh(
-                      script: 'git rev-parse --short HEAD',
-                      returnStdout: true
+                        script: 'git rev-parse --short HEAD',
+                        returnStdout: true
                     ).trim()
 
                     echo "Building hello-world:${env.IMAGE_TAG}"
-                    
+            }
+        }
+        
+        stage('Build Docker Images') {
+            steps {
+                sh '''
                     docker compose build hello-world
                     echo "$IMAGE_TAG" > image-tag.txt
                 '''
