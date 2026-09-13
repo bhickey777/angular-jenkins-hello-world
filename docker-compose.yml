@@ -20,6 +20,16 @@ services:
     ports:
       - "5200:8080"
 
+  hello-world-auth:
+    image: hello-world-auth:${IMAGE_TAG:?IMAGE_TAG must be set}
+    container_name: hello-world-auth
+    restart: unless-stopped
+    build:
+      context: ./hello-world-auth
+      dockerfile: Dockerfile
+    ports:
+      - "3000:8080"
+
   postgres:
     image: postgres:18
     container_name: enterprise-postgres
