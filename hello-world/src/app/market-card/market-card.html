@@ -1,0 +1,57 @@
+<div class="market-card">
+
+  <div class="market-card-header">
+    <span>Market Overview</span>
+
+    <span class="market-status">
+      ● MARKET
+    </span>
+  </div>
+
+
+  @if (marketError) {
+
+    <div class="market-error">
+      Market data is currently unavailable.
+    </div>
+
+  }
+
+  @for (quote of quotes; track quote.symbol) {
+
+    <div class="market-item">
+
+      <div>
+        <strong>
+          {{ quote.symbol }}
+        </strong>
+
+        <span>
+          {{ quote.name }}
+        </span>
+      </div>
+
+
+      <div class="market-price">
+
+        <strong>
+          {{ quote.price | currency:'USD' }}
+        </strong>
+
+
+        <span
+          [class.positive]="quote.changePercent >= 0"
+          [class.negative]="quote.changePercent < 0">
+
+          {{ quote.changePercent >= 0 ? '+' : '' }}
+          {{ quote.changePercent | number:'1.2-2' }}%
+
+        </span>
+
+      </div>
+
+    </div>
+
+  }
+
+</div>

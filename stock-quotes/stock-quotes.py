@@ -3,6 +3,7 @@ import time
 import requests
 
 # Uses TWELVE DATA API for stock quotes 
+# https://twelvedata.com/account/api-keys
 
 from flask import Flask, jsonify, request
 from flask_cors import CORS
@@ -25,7 +26,8 @@ def load_api_key():
     with open("api-key.txt", "r") as file:
         return file.read().strip()
 
-TWELVE_DATA_API_KEY = load_api_key()
+TWELVE_DATA_API_KEY = os.environ.get(
+    "TWELVE_DATA_API_KEY")
 
 @app.route("/api/market/quotes")
 def get_quotes():
