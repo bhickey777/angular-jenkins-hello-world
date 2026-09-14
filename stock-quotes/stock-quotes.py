@@ -29,6 +29,13 @@ def load_api_key():
 TWELVE_DATA_API_KEY = os.environ.get(
     "TWELVE_DATA_API_KEY")
 
+## health check endpoint
+@app.route("/health")
+def health():
+    return {
+        "status": "UP"
+    }, 200
+    
 @app.route("/api/market/quotes")
 def get_quotes():
 
