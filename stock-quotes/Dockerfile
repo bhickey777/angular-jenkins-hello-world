@@ -10,4 +10,4 @@ COPY . .
 
 EXPOSE 8000
 
-CMD ["python", "stock-quote.py"]
+CMD ["python", "stock-quotes.py"]
