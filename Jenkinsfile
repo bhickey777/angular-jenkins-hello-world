@@ -24,6 +24,9 @@ pipeline {
         DB_USER = 'postgres'
         DB_PASSWORD = 'admin'
 
+        //TWELVE Data API key
+        TWELVE_DATA_API_KEY = credentials('twelve-data-api-key')
+        
         // Docker image tag
         IMAGE_TAG = "${BUILD_NUMBER}"
 
