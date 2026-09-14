@@ -145,6 +145,10 @@ pipeline {
                    echo "Application container started:"
 
                    docker compose ps 
+
+                   echo "Show any containers that may have started but exited"
+                   docker compose ps -a
+                   
                 '''
             }
         }
