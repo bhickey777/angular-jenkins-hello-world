@@ -46,6 +46,8 @@ def get_quotes():
         "AAPL,MSFT,NVDA"
     )
 
+    print(f"Symbols: {symbols}")
+    
     symbol_list = [
         symbol.strip().upper()
         for symbol in symbols.split(",")
