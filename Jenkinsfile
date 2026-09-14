@@ -240,6 +240,9 @@ pipeline {
                   echo "========== HELLO WORLD AUTH LOGS =========="
                   docker compose logs --tail=100 hello-world-auth || true
 
+                  echo "========== HELLO WORLD MARKET SERVICE =========="
+                  docker compose logs --tail=100 market-service || true
+
                   echo "========== TEARDOWN =========="
                   docker compose down || true
                '''
