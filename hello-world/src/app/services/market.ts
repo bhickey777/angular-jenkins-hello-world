@@ -19,7 +19,7 @@ export class MarketService {
   getQuotes(): Observable<StockQuote[]> {
 
     return this.http.get<StockQuote[]>(
-      `${this.apiUrl}?symbols=AAPL,MSFT,NVDA`
+      `${this.apiUrl}?symbols=AAPL,MSFT,NVDA,FXAIX`
     );
 
   }

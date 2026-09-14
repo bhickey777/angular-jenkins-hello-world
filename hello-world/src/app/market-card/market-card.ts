@@ -1,7 +1,8 @@
 import {
   Component,
   OnDestroy,
-  OnInit
+  OnInit,
+  signal,
 } from '@angular/core';
 
 import { CommonModule } from '@angular/common';
@@ -29,19 +30,29 @@ import { StockQuote } from '../models/stock-quote.model';
 
 export class MarketCard implements OnInit, OnDestroy {
 
-  quotes: StockQuote[] = [];
+  quotes = signal<StockQuote[]>([]);
 
   marketError = false;
 
   private marketSubscription?: Subscription;
 
   constructor(
-    private marketService: MarketService
+    private marketService: MarketService,
   ) {
+  }
+
+  showQuotes(): void {
+    console.log(
+      `Number of quotes: ${this.quotes.length}`
+    );
+
+     console.log(this.quotes);
+     this.marketError = false;
   }
 
   ngOnInit(): void {
 
+    console.log("NgInit - Market Card");
     this.marketSubscription = interval(30000)
       .pipe(
         startWith(0),
@@ -51,7 +62,8 @@ export class MarketCard implements OnInit, OnDestroy {
       )
       .subscribe({
         next: quotes => {
-          this.quotes = quotes;
+          this.quotes.set(quotes);
+          this.showQuotes();
           this.marketError = false;
         },
 
@@ -68,8 +80,6 @@ export class MarketCard implements OnInit, OnDestroy {
   }
 
   ngOnDestroy(): void {
-
     this.marketSubscription?.unsubscribe();
-
   }
 }

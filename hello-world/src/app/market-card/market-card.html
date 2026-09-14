@@ -17,7 +17,9 @@
 
   }
 
-  @for (quote of quotes; track quote.symbol) {
+  <p>Quote count: {{ quotes().length }}</p>
+  
+ @for (quote of quotes(); track quote.symbol) {
 
     <div class="market-item">
 
