@@ -175,6 +175,21 @@
   letter-spacing: 1px;
 }
 
+.market-price .positive {
+  color: #66bb6a;
+}
+
+.market-price .negative {
+  color: #ef5350;
+}
+
+.market-error {
+  padding: 20px 0;
+
+  color: #ef5350;
+
+  font-size: 0.9rem;
+}
 
 .market-item {
   display: flex;
