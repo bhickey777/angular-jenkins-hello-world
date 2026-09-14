@@ -115,6 +115,8 @@ pipeline {
                     docker compose build hello-world
                     docker compose build hello-world-rpt
                     docker compose build hello-world-auth
+                    docker compose build market-service
+                    
                     echo "$IMAGE_TAG" > image-tag.txt
                 '''
             }
@@ -136,6 +138,9 @@ pipeline {
 
                    echo "Deploying hello-world-auth:$IMAGE_TAG"
                    docker compose up -d --no-build hello-world-auth
+
+                   echo "Deploying market-service:$IMAGE_TAG"
+                   docker compose up -d --no-build market-service
 
                    echo "Application container started:"
 
@@ -166,6 +171,9 @@ pipeline {
 
                    echo "Checking Hello World Authorization..."
                    curl --fail http://localhost:3000/api
+
+                   echo "Checking Market Service..."
+                   curl --fail http://localhost:8000/health
 
 
                    echo "All applications are responding."
