@@ -32,7 +32,7 @@ services:
 
   market-service:
     build:
-      context: ./market-service
+      context: ./stock-quotes
     ports:
       - "8000:8000"
     environment:
