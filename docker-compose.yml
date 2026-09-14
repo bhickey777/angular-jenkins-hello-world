@@ -30,6 +30,14 @@ services:
     ports:
       - "3000:3000"
 
+  market-service:
+    build:
+      context: ./market-service
+    ports:
+      - "8000:8000"
+    environment:
+      TWELVE_DATA_API_KEY: ${TWELVE_DATA_API_KEY}
+      
   postgres:
     image: postgres:18
     container_name: enterprise-postgres
