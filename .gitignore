@@ -13,4 +13,6 @@ mission-ui/test-results/
 .vscode/
 .DS_Store
 
+api-key.txt
+
 
