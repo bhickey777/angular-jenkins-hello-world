@@ -5,15 +5,29 @@
 -- hold one or more accounts; accounts hold instruments via transactions
 -- and current holdings.
 
-DROP TABLE IF EXISTS transactions;
-DROP TABLE IF EXISTS holdings;
-DROP TABLE IF EXISTS accounts;
-DROP TABLE IF EXISTS clients;
-DROP TABLE IF EXISTS advisors;
-DROP TABLE IF EXISTS instruments;
-DROP TABLE IF EXISTS model_portfolios;
-DROP TABLE IF EXISTS model_portfolio_holdings;
-DROP TABLE IF EXISTS client_subscriptions;
+DROP INDEX IF EXISTS idx_clients_advisor_id;
+DROP INDEX IF EXISTS idx_client_trades_client_id;
+DROP INDEX IF EXISTS idx_client_trades_instrument_id;
+DROP INDEX IF EXISTS idx_mph_instrument_id;
+DROP INDEX IF EXISTS idx_cs_model_portfolio_id;
+DROP INDEX IF EXISTS idx_mph_model_portfolio_id;
+DROP INDEX IF EXISTS idx_model_portfolio_holdings_instrument_id;
+DROP INDEX IF EXISTS idx_model_portfolio_holdings_model_portfolio_id;
+DROP INDEX IF EXISTS idx_ch_instrument_id;
+DROP INDEX IF EXISTS idx_transactions_account_id;
+DROP INDEX IF EXISTS idx_transactions_instrument_id;
+DROP INDEX IF EXISTS idx_ch_client_asof;
+
+DROP TABLE IF EXISTS model_portfolios CASCADE;
+DROP TABLE IF EXISTS model_portfolio_holdings CASCADE;
+DROP TABLE IF EXISTS client_subscriptions CASCADE;
+DROP TABLE IF EXISTS transactions CASCADE;
+DROP TABLE IF EXISTS client_holdings CASCADE;
+DROP TABLE IF EXISTS accounts CASCADE;
+DROP TABLE IF EXISTS client_trades CASCADE;
+DROP TABLE IF EXISTS clients CASCADE;
+DROP TABLE IF EXISTS advisors CASCADE;
+DROP TABLE IF EXISTS instruments CASCADE;
 
 CREATE TABLE advisors (
     advisor_id   SERIAL PRIMARY KEY,
@@ -27,7 +41,7 @@ CREATE TABLE clients (
     name           TEXT NOT NULL,
     date_of_birth  DATE NOT NULL,
     risk_profile   TEXT NOT NULL CHECK (risk_profile IN ('Cautious', 'Balanced', 'Adventurous')),
-    advisor_id     INTEGER NOT NULL REFERENCES advisors(advisor_id)
+    advisor_id     INTEGER NOT NULL REFERENCES advisors(advisor_id),
     joined_date    DATE NOT NULL
 );
 CREATE INDEX idx_clients_advisor_id ON clients(advisor_id);
@@ -53,7 +67,7 @@ CREATE TABLE accounts (
     currency      TEXT NOT NULL
 );
 
-CREATE TABLE holdings (
+CREATE TABLE client_holdings (
     client_id      INTEGER NOT NULL REFERENCES clients(client_id),
     instrument_id  INTEGER NOT NULL REFERENCES instruments(instrument_id),
     quantity       NUMERIC(14,4) NOT NULL CHECK (quantity >= 0),
@@ -61,8 +75,21 @@ CREATE TABLE holdings (
     PRIMARY KEY (client_id, instrument_id, as_of_date)
 );
 
+CREATE TABLE client_trades (
+    trade_id       SERIAL PRIMARY KEY,
+    client_id      INTEGER NOT NULL REFERENCES clients(client_id),
+    instrument_id  INTEGER NOT NULL REFERENCES instruments(instrument_id),
+    trade_type     TEXT NOT NULL CHECK (trade_type IN ('BUY', 'SELL')),
+    quantity       NUMERIC(14,4) NOT NULL CHECK (quantity > 0),
+    price          NUMERIC(14,4) NOT NULL CHECK (price > 0),
+    trade_date     DATE NOT NULL
+);
+CREATE INDEX idx_client_trades_client_id ON client_trades(client_id);
+CREATE INDEX idx_client_trades_instrument_id ON client_trades(instrument_id);
+
 CREATE TABLE transactions (
     transaction_id  SERIAL PRIMARY KEY,
+    trade_id        INTEGER REFERENCES client_trades(trade_id),
     account_id      INTEGER NOT NULL REFERENCES accounts(account_id),
     instrument_id   INTEGER REFERENCES instruments(instrument_id),
     txn_type        TEXT NOT NULL CHECK (txn_type IN ('BUY', 'SELL', 'DIVIDEND', 'DEPOSIT', 'WITHDRAWAL')),
@@ -71,10 +98,16 @@ CREATE TABLE transactions (
     txn_date        DATE NOT NULL
 );
 
+-- Sample trade history, consistent with Module 13's client_holdings rows.
+-- Alice Johnson (client_id 1) holds 1200 units of GLBEQ1 (instrument_id 7) and
+-- 600 of CORPB1 (instrument_id 6) as of 2026-06-30. Her trade history below
+-- nets to exactly those quantities.
+
 CREATE TABLE model_portfolio_holdings (
     model_portfolio_id  INTEGER NOT NULL REFERENCES model_portfolios(model_portfolio_id),
     instrument_id       INTEGER NOT NULL REFERENCES instruments(instrument_id),
     target_weight_pct   NUMERIC(5,2) NOT NULL CHECK (target_weight_pct BETWEEN 0 AND 100),
+    as_of_date          DATE NOT NULL,
     PRIMARY KEY (model_portfolio_id, instrument_id)
 );
 CREATE INDEX idx_mph_instrument_id ON model_portfolio_holdings(instrument_id);
@@ -85,6 +118,7 @@ CREATE TABLE client_subscriptions (
     subscribed_date      DATE NOT NULL,
     PRIMARY KEY (client_id, model_portfolio_id, subscribed_date)
 );
+
 CREATE INDEX idx_cs_model_portfolio_id ON client_subscriptions(model_portfolio_id);
 CREATE INDEX idx_ch_instrument_id ON client_holdings(instrument_id);
 CREATE INDEX idx_ch_client_asof ON client_holdings(client_id, as_of_date DESC);
@@ -144,7 +178,7 @@ INSERT INTO accounts (client_id, account_type, opened_date, currency) VALUES
     (9, 'GIA',  '2019-10-12', 'GBP'),
     (10,'ISA',  '2016-05-20', 'GBP');
 
-INSERT INTO holdings (account_id, instrument_id, quantity, as_of_date) VALUES
+INSERT INTO client_holdings (client_id, instrument_id, quantity, as_of_date) VALUES
     (1, 3, 500,  '2026-06-30'), (1, 7, 1200, '2026-06-30'),
     (2, 4, 30,   '2026-06-30'),
     (3, 4, 15,   '2026-06-30'), (3, 8, 2000, '2026-06-30'),
@@ -155,52 +189,81 @@ INSERT INTO holdings (account_id, instrument_id, quantity, as_of_date) VALUES
     (8, 4, 40,   '2026-06-30'), (8, 7, 900,  '2026-06-30'),
     (9, 5, 1000, '2026-06-30'),
     (10, 6, 1200, '2026-06-30'),
-    (11, 2, 800,  '2026-06-30'), (11, 3, 600, '2026-06-30'),
-    (12, 5, 6000, '2026-06-30'), (12, 8, 500, '2026-06-30');
+    (11, 2, 800,  '2026-06-30'), (11, 3, 600, '2026-06-30');
 
-INSERT INTO transactions (account_id, instrument_id, txn_type, quantity, price, txn_date) VALUES
-    (1, 3, 'BUY',      500,  38.20, '2025-01-15'),
-    (1, 7, 'BUY',      1200, 4.10,  '2025-02-01'),
-    (1, 7, 'DIVIDEND', NULL, 45.00, '2025-08-01'),
-    (2, 4, 'BUY',      30,   165.50,'2025-03-10'),
-    (3, 4, 'BUY',      15,   150.00,'2020-01-05'),
-    (3, 8, 'DEPOSIT',  NULL, 2000.00,'2020-01-05'),
-    (4, 5, 'BUY',      5000, 0.98,  '2021-04-01'),
-    (4, 6, 'BUY',      800,  5.25,  '2021-06-15'),
-    (5, 4, 'BUY',      60,   140.00,'2019-01-10'),
-    (5, 1, 'BUY',      2000, 1.15,  '2019-02-20'),
-    (5, 1, 'DIVIDEND', NULL, 60.00, '2025-05-01'),
-    (6, 7, 'BUY',      3000, 3.80,  '2022-02-01'),
-    (7, 5, 'BUY',      3000, 0.97,  '2023-05-01'),
-    (7, 8, 'DEPOSIT',  NULL, 1500.00,'2023-05-01'),
-    (8, 4, 'BUY',      40,   130.00,'2015-08-01'),
-    (8, 7, 'BUY',      900,  3.50,  '2016-01-15'),
-    (8, 7, 'DIVIDEND', NULL, 30.00, '2025-08-01'),
-    (9, 5, 'BUY',      1000, 0.99,  '2020-01-10'),
-    (10,6, 'BUY',      1200, 5.00,  '2022-02-15'),
-    (11,2, 'BUY',      800,  1.80,  '2020-01-15'),
-    (11,3, 'BUY',      600,  36.00, '2020-03-01'),
-    (12,5, 'BUY',      6000, 0.96,  '2016-06-01'),
-    (12,8, 'DEPOSIT',  NULL, 500.00, '2016-06-01'),
-    (1, 3, 'SELL',     100,  40.50, '2026-01-10'),
-    (4, 6, 'SELL',     200,  5.60,  '2025-11-01'),
-    (7, 5, 'SELL',     500,  1.02,  '2025-09-01'),
-    (11,3, 'SELL',     100,  37.20, '2025-10-05'),
-    (2, 4, 'DIVIDEND', NULL, 12.00, '2025-06-01'),
-    (5, 4, 'SELL',     10,   170.00,'2026-02-01'),
-    (12,5, 'DIVIDEND', NULL, 90.00, '2025-08-01');
-
-INSERT INTO model_portfolio_holdings (model_portfolio_id, instrument_id, quantity, as_of_date) VALUES
-    (1, 3, 500,  '2026-06-30'), 
-    (1, 7, 1200, '2026-06-30'),
+INSERT INTO model_portfolio_holdings (model_portfolio_id, instrument_id, target_weight_pct, as_of_date) VALUES
+    (1, 3, 50,  '2026-06-30'), 
+    (1, 7, 12, '2026-06-30'),
     (2, 4, 30,   '2026-06-30'),
     (3, 4, 15,   '2026-06-30'), 
-    (3, 8, 2000, '2026-06-30'),
-    (4, 5, 5000, '2026-06-30'), 
-    (4, 6, 800,  '2026-06-30');
+    (3, 8, 20, '2026-06-30'),
+    (4, 5, 50, '2026-06-30'), 
+    (4, 6, 80,  '2026-06-30');
 
-INSERT INTO client_subscriptions (client_id, model_portfolio_id, start_date) VALUES
+INSERT INTO client_subscriptions (client_id, model_portfolio_id, subscribed_date) VALUES
     (1, 1, '2026-01-01'),
     (2, 2, '2026-02-01'),
     (3, 3, '2026-03-01'),
     (4, 4, '2026-04-01');
+
+INSERT INTO client_trades (client_id, instrument_id, trade_type, quantity, price, trade_date) VALUES
+    (1, 7, 'BUY', 1000, 3.80, '2023-01-20'),
+    (1, 7, 'BUY', 300,  4.05, '2024-03-15'),
+    (1, 7, 'SELL', 100, 4.30, '2025-11-01'),   
+    (1, 6, 'BUY', 600,  4.90, '2023-02-01'),
+
+    (3, 6, 'BUY', 2500, 4.80, '2022-12-01'),
+    (3, 6, 'BUY', 500,  5.10, '2024-06-01'),   
+    (3, 5, 'BUY', 1200, 0.97, '2022-12-01'),   
+
+    (4, 7, 'BUY', 4000, 3.70, '2023-06-15'),
+    (4, 7, 'BUY', 1000, 4.20, '2024-09-01'),   
+    (4, 5, 'BUY', 500,  0.98, '2023-06-15'),
+    (4, 5, 'SELL', 200, 1.05, '2025-04-01');
+
+INSERT INTO client_trades (client_id, instrument_id, trade_type, quantity, price, trade_date) VALUES
+    (1, 7, 'BUY', 1000, 3.80, '2023-01-20'),
+    (1, 7, 'BUY', 300,  4.05, '2024-03-15'),
+    (1, 7, 'SELL', 100, 4.30, '2025-11-01'),   
+    (1, 6, 'BUY', 600,  4.90, '2023-02-01'),   
+
+    (3, 6, 'BUY', 2500, 4.80, '2022-12-01'),
+    (3, 6, 'BUY', 500,  5.10, '2024-06-01'),   
+    (3, 5, 'BUY', 1200, 0.97, '2022-12-01'),   
+
+    (4, 7, 'BUY', 4000, 3.70, '2023-06-15'),
+    (4, 7, 'BUY', 1000, 4.20, '2024-09-01'),   
+    (4, 5, 'BUY', 500,  0.98, '2023-06-15'),
+    (4, 5, 'SELL', 200, 1.05, '2025-04-01');   
+
+INSERT INTO transactions (account_id, trade_id, instrument_id, txn_type, quantity, price, txn_date) VALUES
+    (1, 1, 3, 'BUY',      500,  38.20, '2025-01-15'),
+    (1, 2, 7, 'BUY',      1200, 4.10,  '2025-02-01'),
+    (1, 3, 7, 'DIVIDEND', NULL, 45.00, '2025-08-01'),
+    (2, 4, 4, 'BUY',      30,   165.50,'2025-03-10'),
+    (3, 1, 4, 'BUY',      15,   150.00,'2020-01-05'),
+    (3, 2, 8, 'DEPOSIT',  NULL, 2000.00,'2020-01-05'),
+    (4, 3, 5, 'BUY',      5000, 0.98,  '2021-04-01'),
+    (4, 4, 6, 'BUY',      800,  5.25,  '2021-06-15'),
+    (5, 1, 3, 'BUY',      60,   140.00,'2019-01-10'),
+    (5, 2, 1, 'BUY',      2000, 1.15,  '2019-02-20'),
+    (5, 3, 1, 'DIVIDEND', NULL, 60.00, '2025-05-01'),
+    (6, 4, 7, 'BUY',      3000, 3.80,  '2022-02-01'),
+    (7, 1, 5, 'BUY',      3000, 0.97,  '2023-05-01'),
+    (7, 2, 8, 'DEPOSIT',  NULL, 1500.00,'2023-05-01'),
+    (8, 4, 4, 'BUY',      40,   130.00,'2015-08-01'),
+    (8, 1, 7, 'BUY',      900,  3.50,  '2016-01-15'),
+    (8, 2, 7, 'DIVIDEND', NULL, 30.00, '2025-08-01'),
+    (9, 3, 5, 'BUY',      1000, 0.99,  '2020-01-10'),
+    (10, 4, 6, 'BUY',      1200, 5.00,  '2022-02-15'),
+    (11, 1, 2, 'BUY',      800,  1.80,  '2020-01-15'),
+    (11, 2, 3, 'BUY',      600,  36.00, '2020-03-01'),
+    (12, 3, 5, 'BUY',      6000, 0.96,  '2016-06-01'),
+    (12, 4, 8, 'DEPOSIT',  NULL, 500.00, '2016-06-01'),
+    (1, 1, 3, 'SELL',     100,  40.50, '2026-01-10'),
+    (4, 2, 6, 'SELL',     200,  5.60,  '2025-11-01'),
+    (7, 3, 5, 'SELL',     500,  1.02,  '2025-09-01'),
+    (11, 4, 3, 'SELL',     100,  37.20, '2025-10-05'),
+    (2, 1, 4, 'DIVIDEND', NULL, 12.00, '2025-06-01'),
+    (5, 2, 4, 'SELL',     10,   170.00,'2026-02-01'),
+    (12, 3, 5, 'DIVIDEND', NULL, 90.00, '2025-08-01');

@@ -3,9 +3,10 @@ import { Routes } from '@angular/router';
 import { Home } from './home/home';
 import { Signup } from './signup/signup';
 import { AppHelp } from './app-help/app-help';
+import { HoldingsPage } from './holdings-page/holdings-page';
 
 export const routes: Routes = [
-  { path: '', redirectTo: 'holdings', pathMatch: 'full' },
+  { path: '', redirectTo: 'home', pathMatch: 'full' },
   {
     path: '',
     component: Home
@@ -17,7 +18,12 @@ export const routes: Routes = [
   },
   {
     path: 'signup',
-    component: Signup
+    loadComponent: () =>
+      import('./signup/signup').then((m) => m.Signup),
+  },
+  {
+    path: 'holdings',
+    component: HoldingsPage
   },
   {
     path: 'help',
