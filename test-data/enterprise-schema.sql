@@ -11,6 +11,9 @@ DROP TABLE IF EXISTS accounts;
 DROP TABLE IF EXISTS clients;
 DROP TABLE IF EXISTS advisors;
 DROP TABLE IF EXISTS instruments;
+DROP TABLE IF EXISTS model_portfolios;
+DROP TABLE IF EXISTS model_portfolio_holdings;
+DROP TABLE IF EXISTS client_subscriptions;
 
 CREATE TABLE advisors (
     advisor_id   SERIAL PRIMARY KEY,
@@ -24,8 +27,14 @@ CREATE TABLE clients (
     name           TEXT NOT NULL,
     date_of_birth  DATE NOT NULL,
     risk_profile   TEXT NOT NULL CHECK (risk_profile IN ('Cautious', 'Balanced', 'Adventurous')),
-    advisor_id     INTEGER REFERENCES advisors(advisor_id),
+    advisor_id     INTEGER NOT NULL REFERENCES advisors(advisor_id)
     joined_date    DATE NOT NULL
+);
+CREATE INDEX idx_clients_advisor_id ON clients(advisor_id);
+
+CREATE TABLE model_portfolios (
+    model_portfolio_id  SERIAL PRIMARY KEY,
+    name                TEXT NOT NULL UNIQUE
 );
 
 CREATE TABLE instruments (
@@ -45,11 +54,11 @@ CREATE TABLE accounts (
 );
 
 CREATE TABLE holdings (
-    holding_id     SERIAL PRIMARY KEY,
-    account_id     INTEGER NOT NULL REFERENCES accounts(account_id),
+    client_id      INTEGER NOT NULL REFERENCES clients(client_id),
     instrument_id  INTEGER NOT NULL REFERENCES instruments(instrument_id),
-    quantity       NUMERIC(14,4) NOT NULL,
-    as_of_date     DATE NOT NULL
+    quantity       NUMERIC(14,4) NOT NULL CHECK (quantity >= 0),
+    as_of_date     DATE NOT NULL,
+    PRIMARY KEY (client_id, instrument_id, as_of_date)
 );
 
 CREATE TABLE transactions (
@@ -62,7 +71,31 @@ CREATE TABLE transactions (
     txn_date        DATE NOT NULL
 );
 
+CREATE TABLE model_portfolio_holdings (
+    model_portfolio_id  INTEGER NOT NULL REFERENCES model_portfolios(model_portfolio_id),
+    instrument_id       INTEGER NOT NULL REFERENCES instruments(instrument_id),
+    target_weight_pct   NUMERIC(5,2) NOT NULL CHECK (target_weight_pct BETWEEN 0 AND 100),
+    PRIMARY KEY (model_portfolio_id, instrument_id)
+);
+CREATE INDEX idx_mph_instrument_id ON model_portfolio_holdings(instrument_id);
+
+CREATE TABLE client_subscriptions (
+    client_id           INTEGER NOT NULL REFERENCES clients(client_id),
+    model_portfolio_id  INTEGER NOT NULL REFERENCES model_portfolios(model_portfolio_id),
+    subscribed_date      DATE NOT NULL,
+    PRIMARY KEY (client_id, model_portfolio_id, subscribed_date)
+);
+CREATE INDEX idx_cs_model_portfolio_id ON client_subscriptions(model_portfolio_id);
+CREATE INDEX idx_ch_instrument_id ON client_holdings(instrument_id);
+CREATE INDEX idx_ch_client_asof ON client_holdings(client_id, as_of_date DESC);
+
 -- Seed data ------------------------------------------------------------
+INSERT INTO model_portfolios (name) VALUES
+    ('Conservative'),
+    ('Balanced'),
+    ('Growth'),
+    ('Aggressive');
+
 
 INSERT INTO advisors (name, region, hired_date) VALUES
     ('Priya Shah',       'London',     '2016-03-01'),
@@ -156,3 +189,18 @@ INSERT INTO transactions (account_id, instrument_id, txn_type, quantity, price, 
     (2, 4, 'DIVIDEND', NULL, 12.00, '2025-06-01'),
     (5, 4, 'SELL',     10,   170.00,'2026-02-01'),
     (12,5, 'DIVIDEND', NULL, 90.00, '2025-08-01');
+
+INSERT INTO model_portfolio_holdings (model_portfolio_id, instrument_id, quantity, as_of_date) VALUES
+    (1, 3, 500,  '2026-06-30'), 
+    (1, 7, 1200, '2026-06-30'),
+    (2, 4, 30,   '2026-06-30'),
+    (3, 4, 15,   '2026-06-30'), 
+    (3, 8, 2000, '2026-06-30'),
+    (4, 5, 5000, '2026-06-30'), 
+    (4, 6, 800,  '2026-06-30');
+
+INSERT INTO client_subscriptions (client_id, model_portfolio_id, start_date) VALUES
+    (1, 1, '2026-01-01'),
+    (2, 2, '2026-02-01'),
+    (3, 3, '2026-03-01'),
+    (4, 4, '2026-04-01');
