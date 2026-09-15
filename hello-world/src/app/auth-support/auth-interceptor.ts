@@ -1,6 +1,6 @@
 import { HttpInterceptorFn } from '@angular/common/http';
 import { inject } from '@angular/core';
-import { TokenStore } from './token-store';
+import { TokenStore } from '../token-store/token-store';
 
 const MISSION_SERVICE_BASE = 'http://localhost:8090';
 
