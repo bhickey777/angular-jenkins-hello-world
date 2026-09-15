@@ -18,6 +18,7 @@ DROP INDEX IF EXISTS idx_transactions_account_id;
 DROP INDEX IF EXISTS idx_transactions_instrument_id;
 DROP INDEX IF EXISTS idx_ch_client_asof;
 
+DROP TABLE IF EXISTS employees CASCADE;
 DROP TABLE IF EXISTS model_portfolios CASCADE;
 DROP TABLE IF EXISTS model_portfolio_holdings CASCADE;
 DROP TABLE IF EXISTS client_subscriptions CASCADE;
@@ -34,6 +35,16 @@ CREATE TABLE advisors (
     name         TEXT NOT NULL,
     region       TEXT NOT NULL,
     hired_date   DATE NOT NULL
+);
+
+CREATE TABLE employees (
+    employee_id      SERIAL PRIMARY KEY,
+    name            TEXT NOT NULL,
+    date_of_birth   DATE NOT NULL,
+    dept            TEXT NOT NULL ,
+    roles           TEXT NOT NULL,  
+    email           TEXT NOT NULL,
+    joined_date     DATE NOT NULL
 );
 
 CREATE TABLE clients (
@@ -267,3 +278,9 @@ INSERT INTO transactions (account_id, trade_id, instrument_id, txn_type, quantit
     (2, 1, 4, 'DIVIDEND', NULL, 12.00, '2025-06-01'),
     (5, 2, 4, 'SELL',     10,   170.00,'2026-02-01'),
     (12, 3, 5, 'DIVIDEND', NULL, 90.00, '2025-08-01');
+
+INSERT INTO employees (name, date_of_birth, dept, roles, email, joined_date) VALUES
+    ('John Doe', '1980-05-15', 'Finance', 'Manager', 'johndoe@gmail.com', '2020-01-01'),
+    ('Jane Smith', '1990-07-20', 'IT', 'Developer', 'janesmith@gmail.com', '2021-03-15'),
+    ('Alice Johnson', '1985-09-10', 'HR', 'Recruiter', 'alicejohnson@gmail.com', '2019-06-01'),
+    ('Bob Brown', '1975-12-25', 'Marketing', 'Analyst', 'bobbrown@gmail.com', '2018-11-20');
