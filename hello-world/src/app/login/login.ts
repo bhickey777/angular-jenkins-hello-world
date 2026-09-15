@@ -25,6 +25,7 @@ export class Login {
   });
 
   protected submit(): void {
+    console.log("submit on login form")
     this.error.set(null);
     const { username, password } = this.loginForm.getRawValue();
 
