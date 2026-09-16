@@ -13,6 +13,9 @@ mission-ui/test-results/
 .vscode/
 .DS_Store
 
+# Java compiled files
+*.class
+
 api-key.txt
 
 
