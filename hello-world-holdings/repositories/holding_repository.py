@@ -1,4 +1,6 @@
 from database import get_connection
+from models.holding import Holding
+
 
 class HoldingRepository:
 
@@ -45,7 +47,6 @@ class HoldingRepository:
         """
 
         with get_connection() as connection:
-
             with connection.cursor() as cursor:
 
                 cursor.execute(
@@ -53,4 +54,17 @@ class HoldingRepository:
                     (client_id,)
                 )
 
-                return cursor.fetchall()
+                rows = cursor.fetchall()
+
+        return [
+            Holding(
+                client_id=row[0],
+                instrument_id=row[1],
+                ticker=row[2],
+                name=row[3],
+                asset_class=row[4],
+                currency=row[5],
+                quantity=row[6]
+            )
+            for row in rows
+        ]

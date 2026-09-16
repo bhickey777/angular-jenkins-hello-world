@@ -1,30 +1,29 @@
 from repositories.holding_repository import HoldingRepository
 
-
 class HoldingService:
 
     def __init__(self):
         self.repository = HoldingRepository()
 
-    def get_holdings(self, client_id):
+    def get_holdings(self, client_id: int) -> list[dict]:
 
-        rows = self.repository.find_by_client_id(
+        holdings = self.repository.find_by_client_id(
             client_id
         )
 
-        holdings = []
+        results = []
 
-        for row in rows:
+        for holding in holdings:
 
-            holdings.append({
-                "client_id": row[0],
-                "instrumentId": row[1],
-                "symbol": row[2],
-                "name": row[3],
-                "assetClass": row[4],
-                "currency": row[5],
-                "quantity": float(row[6])
+            results.append({
+                "clientId": holding.client_id,
+                "instrumentId": holding.instrument_id,
+                "ticker": holding.ticker,
+                "name": holding.name,
+                "assetClass": holding.asset_class,
+                "currency": holding.currency,
+                "quantity": float(holding.quantity)
             })
 
-        return holdings
+        return results
     
