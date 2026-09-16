@@ -21,24 +21,14 @@ services:
       - "8090:8090"
 
   hello-world-holdings:
-  build:
-    context: ./hello-world-holdings
-    dockerfile: Dockerfile
-
-  image: hello-world-holdings:${IMAGE_TAG}
-  container_name: hello-world-holdings
-
-  restart: unless-stopped
-
-  ports:
+    image: hello-world-holdings:${IMAGE_TAG}
+    container_name: hello-world-holdings
+    restart: unless-stopped
+    build:
+      context: ./hello-world-holdings
+      dockerfile: Dockerfile
+    ports:
     - "8100:6200"
-
-  environment:
-    DB_HOST: postgres
-    DB_PORT: 5432
-    DB_NAME: helloworld_wealth
-    DB_USER: postgres
-    DB_PASSWORD: ${DB_PASSWORD}
     
   hello-world-rpt:
     image: hello-world-rpt:${IMAGE_TAG:?IMAGE_TAG must be set}
