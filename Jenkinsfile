@@ -242,7 +242,7 @@ pipeline {
                 echo "Stopping Docker containers..."
                 docker compose down
 
-                echo "Start: $(date)"
+                echo "End: $(date)"
             '''
         }
 
