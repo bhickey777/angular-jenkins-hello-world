@@ -1,9 +1,6 @@
 import { Routes } from '@angular/router';
-
 import { Home } from './home/home';
-import { Signup } from './signup/signup';
 import { AppHelp } from './app-help/app-help';
-import { HoldingsPage } from './holdings-page/holdings-page';
 
 export const routes: Routes = [
   { path: '', redirectTo: 'home', pathMatch: 'full' },
@@ -23,7 +20,8 @@ export const routes: Routes = [
   },
   {
     path: 'holdings',
-    component: HoldingsPage
+    loadComponent: () =>
+      import('./holdings-page/holdings-page').then((m) => m.HoldingsPage),
   },
   {
     path: 'help',

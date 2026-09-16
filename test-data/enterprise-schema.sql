@@ -50,6 +50,7 @@ CREATE TABLE employees (
 CREATE TABLE clients (
     client_id      SERIAL PRIMARY KEY,
     name           TEXT NOT NULL,
+    email          TEXT NOT NULL UNIQUE,
     date_of_birth  DATE NOT NULL,
     risk_profile   TEXT NOT NULL CHECK (risk_profile IN ('Cautious', 'Balanced', 'Adventurous')),
     advisor_id     INTEGER NOT NULL REFERENCES advisors(advisor_id),
@@ -158,18 +159,19 @@ INSERT INTO instruments (ticker, name, asset_class, currency) VALUES
     ('GLBEQ1', 'Global Equity Index Fund',  'Fund',   'GBP'),
     ('CASHGBP','Cash (GBP)',                'Cash',   'GBP');
 
-INSERT INTO clients (name, date_of_birth, risk_profile, advisor_id, joined_date) VALUES
-    ('Alice Johnson',   '1978-04-12', 'Balanced',    1, '2019-02-01'),
-    ('Brian Osei',      '1985-11-03', 'Adventurous', 2, '2020-06-15'),
-    ('Carla Mendes',    '1962-08-22', 'Cautious',    1, '2017-11-01'),
-    ('David Kim',       '1990-01-30', 'Adventurous', 3, '2021-03-10'),
-    ('Elena Petrova',   '1971-06-18', 'Balanced',    2, '2018-09-05'),
-    ('Farid Hossain',   '1988-12-09', 'Balanced',    4, '2022-01-20'),
-    ('Grace Lin',       '1995-05-25', 'Adventurous', 3, '2023-04-01'),
-    ('Harold Baxter',   '1955-02-14', 'Cautious',    1, '2015-07-01'),
-    ('Isabel Marin',    '1980-09-09', 'Balanced',    4, '2019-10-12'),
-    ('Jack Whitfield',  '1968-03-03', 'Cautious',    2, '2016-05-20'),
-    ('Nadia Farouk',     '1993-07-19', 'Balanced',    3, '2026-06-01');
+INSERT INTO clients (name, email, date_of_birth, risk_profile, advisor_id, joined_date) VALUES
+    ('Alice Johnson',   'alice.johnson@example.com', '1978-04-12', 'Balanced',    1, '2019-02-01'),
+    ('Brian Osei',      'brian.osei@example.com', '1985-11-03', 'Adventurous', 2, '2020-06-15'),
+    ('Carla Mendes',    'carla.mendes@example.com', '1962-08-22', 'Cautious',    1, '2017-11-01'),
+    ('David Kim',       'david.kim@example.com', '1990-01-30', 'Adventurous', 3, '2021-03-10'),
+    ('Elena Petrova',   'elena.petrova@example.com', '1971-06-18', 'Balanced',    2, '2018-09-05'),
+    ('Farid Hossain',   'farid.hossain@example.com', '1988-12-09', 'Balanced',    4, '2022-01-20'),
+    ('Grace Lin',       'grace.lin@example.com', '1995-05-25', 'Adventurous', 3, '2023-04-01'),
+    ('Harold Baxter',   'harold.baxter@example.com', '1955-02-14', 'Cautious',    1, '2015-07-01'),
+    ('Isabel Marin',    'isabel.marin@example.com', '1980-09-09', 'Balanced',    4, '2019-10-12'),
+    ('Jack Whitfield',  'jack.whitfield@example.com', '1968-03-03', 'Cautious',    2, '2016-05-20'),
+    ('Nadia Farouk',     'nadia.farouk@example.com', '1993-07-19', 'Balanced',    3, '2026-06-01');
+
     -- Nadia is a newly onboarded prospective client: assigned an advisor, but
     -- hasn't opened an account yet. Deliberately included so LEFT JOIN /
     -- RIGHT JOIN produce NULLs for account columns, not just INNER JOIN

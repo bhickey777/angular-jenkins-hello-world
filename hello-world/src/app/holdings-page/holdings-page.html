@@ -1,1 +1,79 @@
-<p>holdings-page works!</p>
+<div class="holdings-card">
+
+  <div class="holdings-header">
+    <div>
+      <h2>Portfolio Holdings</h2>
+      <span>Client {{ clientId }}</span>
+    </div>
+
+    <span class="holding-count">
+      {{ holdings.length }} Holdings
+    </span>
+  </div>
+
+
+  @if (loading) {
+
+    <div class="message">
+      Loading holdings...
+    </div>
+
+  } @else if (holdingsError) {
+
+    <div class="error-message">
+      Unable to retrieve holdings.
+    </div>
+
+  } @else if (holdings.length === 0) {
+
+    <div class="message">
+      No holdings found.
+    </div>
+
+  } @else {
+
+    <div class="holdings-table">
+
+      <div class="table-header">
+        <span>Symbol</span>
+        <span>Investment</span>
+        <span>Asset Class</span>
+        <span>Quantity</span>
+        <span>Currency</span>
+      </div>
+
+      @for (
+        holding of holdings;
+        track holding.instrumentId
+      ) {
+
+        <div class="holding-row">
+
+          <strong class="ticker">
+            {{ holding.ticker }}
+          </strong>
+
+          <span>
+            {{ holding.name }}
+          </span>
+
+          <span>
+            {{ holding.assetClass }}
+          </span>
+
+          <span class="quantity">
+            {{ holding.quantity | number:'1.0-4' }}
+          </span>
+
+          <span>
+            {{ holding.currency }}
+          </span>
+
+        </div>
+      }
+
+    </div>
+
+  }
+
+</div>

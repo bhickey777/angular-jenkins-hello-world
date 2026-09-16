@@ -1,0 +1,93 @@
+.holdings-card {
+  background: #161b22;
+  border: 1px solid #30363d;
+  border-radius: 10px;
+  padding: 20px;
+  color: #f0f6fc;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.holdings-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.holdings-header h2 {
+  margin: 0;
+}
+
+.holdings-header span {
+  color: #8b949e;
+  font-size: 0.9rem;
+}
+
+.holding-count {
+  background: #21262d;
+  padding: 6px 12px;
+  border-radius: 15px;
+}
+
+.holdings-table {
+  width: 100%;
+}
+
+.table-header,
+.holding-row {
+  display: grid;
+
+  grid-template-columns:
+    120px
+    2fr
+    1fr
+    1fr
+    100px;
+
+  gap: 15px;
+
+  align-items: center;
+
+  padding: 12px 10px;
+}
+
+.table-header {
+  color: #8b949e;
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  border-bottom: 1px solid #30363d;
+}
+
+.holding-row {
+  border-bottom: 1px solid #21262d;
+}
+
+.holding-row:last-child {
+  border-bottom: none;
+}
+
+.holding-row:hover {
+  background: #1c2128;
+}
+
+.ticker {
+  color: #58a6ff;
+}
+
+.quantity {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+.message {
+  padding: 20px;
+  text-align: center;
+  color: #8b949e;
+}
+
+.error-message {
+  padding: 20px;
+  text-align: center;
+  color: #f85149;
+}
