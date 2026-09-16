@@ -117,6 +117,7 @@ pipeline {
                     docker compose build hello-world-rpt
                     docker compose build hello-world-auth
                     docker compose build hello-world-svc
+                    docker compose build hello-world-holdings
                     docker compose build market-service
                     
                     echo "$IMAGE_TAG" > image-tag.txt
@@ -143,6 +144,9 @@ pipeline {
 
                    echo "Deploying hello-world-svc:$IMAGE_TAG"
                    docker compose up -d --no-build hello-world-svc
+
+                   echo "Deploying hello-world-holdings:$IMAGE_TAG"
+                   docker compose up -d --no-build hello-world-holdings
 
                    echo "Deploying market-service:$IMAGE_TAG"
                    docker compose up -d --no-build market-service
@@ -183,6 +187,9 @@ pipeline {
 
                    echo "Checking Hello World Services..."
                    curl --fail http://localhost:8090/health
+
+                   echo "Checking Hello World Holdings..."
+                   curl --fail http://localhost:6200/health
 
                    echo "Checking Market Service..."
                    curl --fail http://localhost:8000/health
@@ -251,6 +258,9 @@ pipeline {
 
                   echo "========== HELLO WORLD SVCS =========="
                   docker compose logs --tail=100 hello-world-svc || true
+
+                  echo "========== HELLO WORLD HOLDINGS =========="
+                  docker compose logs --tail=100 hello-world-holdings || true
 
                   echo "========== HELLO WORLD REPORTING LOGS =========="
                   docker compose logs --tail=100 hello-world-rpt || true
