@@ -28,7 +28,7 @@ services:
       context: ./hello-world-holdings
       dockerfile: Dockerfile
     ports:
-      - "8100:6200"
+      - "6200:6200"
     
   hello-world-rpt:
     image: hello-world-rpt:${IMAGE_TAG:?IMAGE_TAG must be set}
