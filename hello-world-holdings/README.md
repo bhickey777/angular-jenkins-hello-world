@@ -15,3 +15,8 @@ python3 -m pytest -v
 
 To run the application: 
 python3 app.py
+
+For Python Code Coverage: 
+coverage run -m pytest
+coverage report -m
+
