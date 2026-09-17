@@ -43,6 +43,11 @@ pipeline {
     stages {
         stage('Checkout') {
             steps {
+
+                sh '''
+                    echo "Start: $(date)"
+                '''
+                
                 checkout scm
 
                 sh '''
@@ -236,6 +241,8 @@ pipeline {
             sh '''
                 echo "Stopping Docker containers..."
                 docker compose down
+
+                echo "End: $(date)"
             '''
         }
 
