@@ -8,7 +8,7 @@ To test using a specific client holdings:
 curl --fail http://localhost:6200/api/clients/1/holdings
 
 To retrieve a specific client's info:
-curl --fail https://localhost:6200/api/clients/1
+curl --fail http://localhost:6200/api/clients/1
 
 To run the unit tests
 python3 -m pytest -v
