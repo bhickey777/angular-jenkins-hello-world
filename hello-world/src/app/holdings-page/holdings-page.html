@@ -3,7 +3,7 @@
   <div class="holdings-header">
     <div>
       <h2>Portfolio Holdings</h2>
-      <span>Client {{ clientId }}</span>
+      <span>Client {{ clients[0].clientId }} {{ clients[0].name }} {{clients[0].email }}</span>
     </div>
 
     <span class="holding-count">
@@ -38,7 +38,7 @@
         <span>Symbol</span>
         <span>Investment</span>
         <span>Asset Class</span>
-        <span>Quantity</span>
+        <span class="quantity">Quantity</span>
         <span>Currency</span>
       </div>
 
@@ -60,7 +60,6 @@
           <span>
             {{ holding.assetClass }}
           </span>
-
           <span class="quantity">
             {{ holding.quantity | number:'1.0-4' }}
           </span>

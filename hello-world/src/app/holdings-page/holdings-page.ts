@@ -1,7 +1,10 @@
 import { Component, ChangeDetectorRef, OnInit } from "@angular/core";
 import { DecimalPipe } from '@angular/common';
 import { Holding } from '../models/holding';
+import { Client } from '../models/client';
 import { HoldingService } from '../services/holding-service';
+import { ClientService } from '../services/client-service';
+
 @Component({
   selector: "app-holdings-page",
   imports: [DecimalPipe],
@@ -12,6 +15,7 @@ import { HoldingService } from '../services/holding-service';
 
 export class HoldingsPage implements OnInit {
   holdings: Holding[] = [];
+  clients: Client[] = [];
 
   loading = true;
   holdingsError = false;
@@ -21,12 +25,17 @@ export class HoldingsPage implements OnInit {
 
   constructor(
     private holdingService: HoldingService,
+    private clientService: ClientService,
     private changeDetectorRef: ChangeDetectorRef
   ) {}
 
   ngOnInit(): void {
+    this.getHoldings();
+    this.getClient();
+  }
 
-    this.holdingService
+  getHoldings(): void {
+     this.holdingService
       .getHoldings(this.clientId)
       .subscribe({
 
@@ -49,6 +58,30 @@ export class HoldingsPage implements OnInit {
 
           this.loading = false;
           this.holdingsError = true;
+
+          this.changeDetectorRef.detectChanges();
+        }
+      });
+  }
+
+  getClient(): void {
+    this.clientService
+      .getHoldings(this.clientId)
+      .subscribe({
+
+        next: clients => {
+
+          this.clients = clients;
+
+          this.changeDetectorRef.detectChanges();
+        },
+
+        error: error => {
+
+          console.error(
+            'Unable to retrieve client',
+            error
+          );
 
           this.changeDetectorRef.detectChanges();
         }
