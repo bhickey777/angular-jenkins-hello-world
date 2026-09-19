@@ -1,0 +1,5 @@
+Flask
+Flask-Cors
+psycopg[binary]
+pytest
+pytest-mock

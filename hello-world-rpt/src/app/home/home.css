@@ -1,37 +1,43 @@
 .reporting-home {
+  width: 100%;
   min-height: 100vh;
   padding: 40px;
+  box-sizing: border-box;
 }
 
 .home-content {
   display: grid;
-  grid-template-columns: 1fr 500px 1fr;
+
+  grid-template-columns:
+    minmax(250px, 1fr)
+    minmax(400px, 500px)
+    minmax(250px, 1fr);
+
   gap: 40px;
   align-items: start;
 }
 
+.employee-area {
+  width: 100%;
+}
+
 .customer-area {
-  grid-column: 2;
+  width: 100%;
 }
 
 .reports-area {
-  grid-column: 3;
-  max-width: 350px;
   width: 100%;
 }
 
 @media (max-width: 1000px) {
+
   .home-content {
     grid-template-columns: 1fr;
   }
 
-  .left-space {
-    display: none;
-  }
-
+  .employee-area,
   .customer-area,
   .reports-area {
-    grid-column: 1;
     width: 100%;
     max-width: 600px;
     margin: 0 auto;

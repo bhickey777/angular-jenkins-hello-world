@@ -20,7 +20,7 @@ export class Login {
   protected readonly error = signal<string | null>(null);
 
   protected readonly loginForm = this.fb.group({
-    username: ['alice', Validators.required],
+    username: ['John Doe', Validators.required],
     password: ['mission123', Validators.required],
   });
 

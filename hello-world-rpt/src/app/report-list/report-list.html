@@ -1,1 +1,31 @@
-<p>report-list works!</p>
+<div class="reports-card">
+
+  <h2>Reports</h2>
+
+  <p class="description">
+    Select a report to run.
+  </p>
+
+  <div class="report-list">
+
+    @for (report of reports; track report.name) {
+
+      <button
+        class="report-item"
+        (click)="runReport(report)">
+
+        <span class="report-name">
+          {{ report.name }}
+        </span>
+
+        <span class="report-description">
+          {{ report.description }}
+        </span>
+
+      </button>
+
+    }
+
+  </div>
+
+</div>
