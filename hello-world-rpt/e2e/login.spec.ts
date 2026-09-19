@@ -17,7 +17,7 @@ test.describe('Reporting App Login', () => {
 
   test('should login and navigate to home page', async ({ page }) => {
 
-    await page.getByLabel('Employee Name').fill('John Doe');
+    await page.getByLabel('Employee Name').fill('John');
 
     await page.getByLabel('Password').fill('mission123');
 
