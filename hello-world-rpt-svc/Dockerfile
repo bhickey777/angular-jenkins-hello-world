@@ -11,6 +11,6 @@ COPY . .
 # Run unit tests
 RUN python -m pytest -v
 
-EXPOSE 6200
+EXPOSE 7200
 
 CMD ["python", "app.py"]
