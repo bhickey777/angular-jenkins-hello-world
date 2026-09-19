@@ -32,6 +32,7 @@ pipeline {
 
         DEPLOYED_HW_URL='http://localhost:4200'
         DEPLOYED_HWR_URL='http://localhost:5200'
+        DEPLOYED_HWRS_URL='http://localhost:7200'
         DEPLOYED_HWA_URL='http://localhost:3000'
         DEPLOYED_HWS_URL='http://localhost:8090'
     }
@@ -115,6 +116,7 @@ pipeline {
                 sh '''
                     docker compose build hello-world
                     docker compose build hello-world-rpt
+                    docker compose build hello-world-rpt-svc
                     docker compose build hello-world-auth
                     docker compose build hello-world-svc
                     docker compose build hello-world-holdings
@@ -138,6 +140,9 @@ pipeline {
 
                    echo "Deploying hello-world-rpt:$IMAGE_TAG"
                    docker compose up -d --no-build hello-world-rpt
+
+                   echo "Deploying hello-world-rpt-svc:$IMAGE_TAG"
+                   docker compose up -d --no-build hello-world-rpt-svc
 
                    echo "Deploying hello-world-auth:$IMAGE_TAG"
                    docker compose up -d --no-build hello-world-auth
@@ -182,6 +187,9 @@ pipeline {
                    echo "Checking Hello World Reporting..."
                    curl --fail http://localhost:5200
 
+                   echo "Checking Hello World Reporting Services..."
+                   curl --fail http://localhost:7200
+
                    echo "Checking Hello World Authorization..."
                    curl --fail http://localhost:3000/api
 
@@ -221,6 +229,10 @@ pipeline {
                     PLAYWRIGHT_TEST_BASE_URL="$DEPLOYED_HW_URL" npx playwright test
 
                     echo "========== TESTING HELLO WORLD REPORTING =========="
+                    cd ../hello-world-rpt
+                    npm ci
+
+                    echo "========== TESTING HELLO WORLD REPORTING SERVICES =========="
                     cd ../hello-world-rpt
                     npm ci
                     
@@ -264,6 +276,9 @@ pipeline {
 
                   echo "========== HELLO WORLD REPORTING LOGS =========="
                   docker compose logs --tail=100 hello-world-rpt || true
+
+                  echo "========== HELLO WORLD REPORTING SERVICES LOGS =========="
+                  docker compose logs --tail=100 hello-world-rpt-svc || true
 
                   echo "========== HELLO WORLD AUTH LOGS =========="
                   docker compose logs --tail=100 hello-world-auth || true

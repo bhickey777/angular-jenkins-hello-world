@@ -40,6 +40,16 @@ services:
     ports:
       - "5200:8080"
 
+  hello-world-rpt-svc:
+    image: hello-world-rpt-svc:${IMAGE_TAG}
+    container_name: hello-world-rpt-svc
+    restart: unless-stopped
+    build:
+      context: ./hello-world-rpt-svc
+      dockerfile: Dockerfile
+    ports:
+      - "7200:7200"
+
   hello-world-auth:
     image: hello-world-auth:${IMAGE_TAG:?IMAGE_TAG must be set}
     container_name: hello-world-auth
