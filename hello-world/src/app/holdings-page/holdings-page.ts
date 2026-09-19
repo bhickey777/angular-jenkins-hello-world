@@ -15,7 +15,7 @@ import { ClientService } from '../services/client-service';
 
 export class HoldingsPage implements OnInit {
   holdings: Holding[] = [];
-  clients: Client[] = [];
+  client?: Client;
 
   loading = true;
   holdingsError = false;
@@ -66,13 +66,11 @@ export class HoldingsPage implements OnInit {
 
   getClient(): void {
     this.clientService
-      .getHoldings(this.clientId)
+      .getClient(this.clientId)
       .subscribe({
 
-        next: clients => {
-
-          this.clients = clients;
-
+        next: client => {
+          this.client = client;
           this.changeDetectorRef.detectChanges();
         },
 

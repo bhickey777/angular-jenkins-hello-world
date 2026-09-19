@@ -10,18 +10,18 @@ import { Client } from '../models/client'
 export class ClientService {
 
   private readonly baseUrl =
-     'http://localhost:6200/api/clients/';
+     'http://localhost:6200/api/clients';
 
   constructor(
     private http: HttpClient
   ) {}
 
-  getHoldings(
+  getClient(
     clientId: number
-  ): Observable<Client[]> {
+  ): Observable<Client> {
 
-    return this.http.get<Client[]>(
-      `${this.baseUrl}/${clientId}/`
+    return this.http.get<Client>(
+      `${this.baseUrl}/${clientId}`
     );
   }
 }

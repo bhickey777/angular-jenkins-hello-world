@@ -3,7 +3,9 @@
   <div class="holdings-header">
     <div>
       <h2>Portfolio Holdings</h2>
-      <span>Client {{ clients[0].clientId }} {{ clients[0].name }} {{clients[0].email }}</span>
+      @if (client) {
+        <span>{{ client.name }} {{client.email }} ID Number: {{ client.clientId }}</span>
+      }
     </div>
 
     <span class="holding-count">
