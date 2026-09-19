@@ -188,7 +188,7 @@ pipeline {
                    curl --fail http://localhost:5200
 
                    echo "Checking Hello World Reporting Services..."
-                   curl --fail http://localhost:7200
+                   curl --fail http://localhost:7200/health
 
                    echo "Checking Hello World Authorization..."
                    curl --fail http://localhost:3000/api
