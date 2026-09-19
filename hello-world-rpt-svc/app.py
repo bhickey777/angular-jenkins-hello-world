@@ -8,7 +8,7 @@ app = Flask(__name__)
 
 CORS(
     app,
-    origins=["http://localhost:4200"]
+    origins=["http://localhost:4200", "http://localhost:5200"]
 )
 
 app.register_blueprint(holding_controller);
@@ -19,7 +19,7 @@ def health():
 
     return {
         "status": "UP",
-        "service": "holdings-service"
+        "service": "hello-world-rpt-svc"
     }, 200
 
 
@@ -27,6 +27,6 @@ if __name__ == "__main__":
 
     app.run(
         host="0.0.0.0",
-        port=6200,
+        port=7200,
         debug=False
     )
