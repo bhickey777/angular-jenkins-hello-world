@@ -23,6 +23,7 @@ export class AuthController {
   @ApiResponse({ status: 200, description: "Login succeeded, tokens issued" })
   @ApiResponse({ status: 401, description: "Invalid username or password" })
   login(@Body() body: LoginDto) {
+    console.log(body);
     return this.authService.login(body.username, body.password);
   }
 }

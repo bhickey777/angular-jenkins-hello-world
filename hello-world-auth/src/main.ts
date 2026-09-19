@@ -11,8 +11,8 @@ async function bootstrap() {
   
   app.enableCors({
     origin: [
-     'http://localhost:4200', //needed for Angular front-end
-     'http://localhost:5200', //reporting
+     'http://localhost:4200', //main web app for hello world
+     'http://localhost:5200', //reporting for hello world
      'http://localhost:8000',
     ],
     methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
