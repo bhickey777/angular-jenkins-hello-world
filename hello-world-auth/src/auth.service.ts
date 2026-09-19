@@ -68,7 +68,7 @@ export class AuthService {
   private issueAccessToken(username: string, roles: string[]): string {
     return jwt.sign({ sub: username, roles }, JWT_SECRET, {
       algorithm: "HS256",
-      expiresIn: "30m",
+      expiresIn: "7d",
     });
   }
 
