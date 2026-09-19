@@ -1,0 +1,39 @@
+.reporting-home {
+  min-height: 100vh;
+  padding: 40px;
+}
+
+.home-content {
+  display: grid;
+  grid-template-columns: 1fr 500px 1fr;
+  gap: 40px;
+  align-items: start;
+}
+
+.customer-area {
+  grid-column: 2;
+}
+
+.reports-area {
+  grid-column: 3;
+  max-width: 350px;
+  width: 100%;
+}
+
+@media (max-width: 1000px) {
+  .home-content {
+    grid-template-columns: 1fr;
+  }
+
+  .left-space {
+    display: none;
+  }
+
+  .customer-area,
+  .reports-area {
+    grid-column: 1;
+    width: 100%;
+    max-width: 600px;
+    margin: 0 auto;
+  }
+}
