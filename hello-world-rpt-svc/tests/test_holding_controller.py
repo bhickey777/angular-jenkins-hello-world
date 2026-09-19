@@ -21,7 +21,7 @@ def test_health(client):
     data = response.get_json()
 
     assert data["status"] == "UP"
-    assert data["service"] == "holdings-service"
+    assert data["service"] == "hello-world-rpt-svc"
 
 
 @patch(
