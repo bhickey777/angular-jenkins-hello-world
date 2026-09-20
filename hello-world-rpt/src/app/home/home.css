@@ -17,16 +17,17 @@
   align-items: start;
 }
 
-.employee-area {
-  width: 100%;
-}
-
-.customer-area {
-  width: 100%;
-}
-
+.employee-area,
+.customer-area,
 .reports-area {
   width: 100%;
+}
+
+/* Report viewer occupies entire second row */
+.report-viewer-area {
+  grid-column: 1 / -1;
+  width: 100%;
+  margin-top: 20px;
 }
 
 @media (max-width: 1000px) {
@@ -37,9 +38,14 @@
 
   .employee-area,
   .customer-area,
-  .reports-area {
+  .reports-area,
+  .report-viewer-area {
     width: 100%;
     max-width: 600px;
     margin: 0 auto;
+  }
+
+  .report-viewer-area {
+    grid-column: 1;
   }
 }

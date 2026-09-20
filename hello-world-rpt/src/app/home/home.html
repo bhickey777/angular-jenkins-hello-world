@@ -2,6 +2,7 @@
 
   <main class="home-content">
 
+    <!-- Top row -->
     <aside class="employee-area">
       <app-employee-info></app-employee-info>
     </aside>
@@ -11,8 +12,17 @@
     </section>
 
     <aside class="reports-area">
-      <app-report-list></app-report-list>
+      <app-report-list
+        (reportSelected)="selectedReport = $event">
+      </app-report-list>
     </aside>
+
+    <!-- Bottom row -->
+    <section class="report-viewer-area">
+      <app-report-viewer
+        [reportType]="selectedReport">
+      </app-report-viewer>
+    </section>
 
   </main>
 

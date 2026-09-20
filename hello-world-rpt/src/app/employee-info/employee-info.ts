@@ -10,7 +10,7 @@ export class EmployeeInfo {
 
   employee = {
     employeeId: 10245,
-    name: 'Brian Hickey',
+    name: 'John Doe',
     role: 'Financial Advisor',
     department: 'Investment Services'
   };

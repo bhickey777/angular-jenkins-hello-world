@@ -1,8 +1,9 @@
-import { Component } from '@angular/core';
+import { Component, output } from '@angular/core';
 
 interface Report {
   name: string;
   description: string;
+  reportType: string;
 }
 @Component({
   selector: 'app-report-list',
@@ -12,30 +13,38 @@ interface Report {
 })
 export class ReportList {
 
+  reportSelected = output<string>();
+
   reports: Report[] = [
     {
-      name: 'Account Summary',
-      description: 'Customer account summary'
+      name: 'Asset Totals from Trading',
+      description: 'Total trade value by asset class',
+      reportType: 'assetClassTotals'
     },
     {
-      name: 'Holdings Report',
-      description: 'Current customer holdings'
+      name: 'Weekly Trends',
+      description: 'Total trade value by week',
+      reportType: 'weeklyTrends'
     },
     {
       name: 'Trade History',
-      description: 'Customer trading activity'
+      description: 'Customer trading activity',
+      reportType: 'tradeHistory'
     },
     {
       name: 'Transaction Report',
-      description: 'Account transactions'
+      description: 'Account transactions',
+      reportType: 'transactionReport'
     },
     {
       name: 'Client Statement',
-      description: 'Generate client statement'
+      description: 'Generate client statement',
+      reportType: 'clientStatement'
     }
   ];
 
-  runReport(report: Report): void {
+  protected runReport(report: Report): void {
     console.log('Running report:', report.name);
+    this.reportSelected.emit(report.reportType);
   }
 }

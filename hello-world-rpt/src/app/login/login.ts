@@ -20,7 +20,7 @@ export class Login {
   protected readonly error = signal<string | null>(null);
 
   protected readonly loginForm = this.fb.group({
-    username: ['John Doe', Validators.required],
+    username: ['john doe', Validators.required],
     password: ['mission123', Validators.required],
   });
 
@@ -29,7 +29,8 @@ export class Login {
     this.error.set(null);
     const { username, password } = this.loginForm.getRawValue();
 
-    this.authApi.login(username!, password!).subscribe({
+    const _username = this.joinNames(username!);
+    this.authApi.login(_username, password!).subscribe({
       next: (response) => {
         this.tokenStore.setToken(response.accessToken, username!);
         this.router.navigate(['/home']);
@@ -39,6 +40,11 @@ export class Login {
         this.error.set('Invalid username or password.');
       },
     });
+  }
+
+  protected joinNames(username: string): string {
+    const [firstName, lastName] = username.split(' ');
+    return firstName.trim() + lastName.trim();
   }
 }
 

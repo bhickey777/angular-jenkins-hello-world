@@ -1,8 +1,8 @@
 from flask import Flask
 from flask_cors import CORS
 
-from controllers.holding_controller import ( holding_controller )
 from controllers.client_controller import ( client_controller )
+from controllers.report_controller import ( report_controller )
 
 app = Flask(__name__)
 
@@ -11,8 +11,8 @@ CORS(
     origins=["http://localhost:4200", "http://localhost:5200"]
 )
 
-app.register_blueprint(holding_controller);
 app.register_blueprint(client_controller);
+app.register_blueprint(report_controller);
 
 @app.route("/health")
 def health():
