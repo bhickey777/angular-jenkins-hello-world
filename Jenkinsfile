@@ -48,6 +48,8 @@ pipeline {
                     node --version
                     npm --version 
                     ng version
+
+                    docker --version
                     
                     echo "Current directory:"
                     pwd
