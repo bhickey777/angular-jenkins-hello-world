@@ -232,8 +232,7 @@ pipeline {
                     cd hello-world
                     npm ci
                     
-                    npx playwright install chromium
-                    PLAYWRIGHT_TEST_BASE_URL="$DEPLOYED_HW_URL" npx playwright test
+                    npm run e2e
 
                     echo "========== TESTING HELLO WORLD REPORTING =========="
                     cd ../hello-world-rpt
@@ -243,8 +242,7 @@ pipeline {
                     cd ../hello-world-rpt
                     npm ci
                     
-                    npx playwright install chromium
-                    PLAYWRIGHT_TEST_BASE_URL="$DEPLOYED_HWR_URL" npx playwright test
+                    npm run e2e
                 '''
             }
         }
