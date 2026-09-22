@@ -119,5 +119,21 @@ pipeline {
                 '''
             }
         }
+
+	stage('Build Docker Images') {
+            steps {
+                sh '''
+                    docker-compose build hello-world
+                    docker-compose build hello-world-rpt
+                    docker-compose build hello-world-rpt-svc
+                    docker-compose build hello-world-auth
+                    docker-compose build hello-world-svc
+                    docker-compose build hello-world-holdings
+                    docker-compose build market-service
+                    
+                    echo "$IMAGE_TAG" > image-tag.txt
+                '''
+            }
+        }
     }
 }
