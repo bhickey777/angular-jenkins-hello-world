@@ -216,5 +216,38 @@ pipeline {
                  '''
             }
         }
+	 // Reuses the existing Playwright acceptance tests against the
+        // application deployed on this Linux server.
+        stage('Acceptance Tests') {
+            steps {
+                sh '''
+                    set -eu
+
+                    echo "========== TESTING STOCK QUOTE SVC =========="
+                    //curl --fail "http://localhost:8000/api/market/quotes?symbols=AAPL"
+              
+                    echo "========== TESTING HELLO WORLD AUTH =========="
+                    docker exec hello-world-auth npm test -- --runInBand
+                    
+                    echo "========== TESTING HELLO WORLD =========="
+                    cd hello-world
+                    npm ci
+                    
+                    npx playwright install chromium
+                    PLAYWRIGHT_TEST_BASE_URL="$DEPLOYED_HW_URL" npx playwright test
+
+                    echo "========== TESTING HELLO WORLD REPORTING =========="
+                    cd ../hello-world-rpt
+                    npm ci
+
+                    echo "========== TESTING HELLO WORLD REPORTING SERVICES =========="
+                    cd ../hello-world-rpt
+                    npm ci
+                    
+                    npx playwright install chromium
+                    PLAYWRIGHT_TEST_BASE_URL="$DEPLOYED_HWR_URL" npx playwright test
+                '''
+            }
+        }
     }
 }
