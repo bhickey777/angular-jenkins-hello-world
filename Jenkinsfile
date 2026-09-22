@@ -63,16 +63,17 @@ pipeline {
 
         stage('Config Pipeline') {
             steps {
-                
-               sh '''
-			node --version
+               node('docker') {
+                 sh '''
+					node --version
                     npm --version
                     ng version
 
                     docker --version
                     docker-compose --version
-		  '''
-
+		         '''
+			   }
+				
                script {
                     env.IMAGE_TAG = sh(
                         script: 'git rev-parse --short HEAD',
