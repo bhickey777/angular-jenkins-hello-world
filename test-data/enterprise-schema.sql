@@ -42,7 +42,8 @@ CREATE TABLE employees (
     name            TEXT NOT NULL,
     date_of_birth   DATE NOT NULL,
     dept            TEXT NOT NULL ,
-    roles           TEXT NOT NULL,  
+    roles           TEXT NOT NULL,
+    clientContact   BOOLEAN NOT NULL DEFAULT FALSE,  
     email           TEXT NOT NULL,
     joined_date     DATE NOT NULL
 );
@@ -281,8 +282,8 @@ INSERT INTO transactions (account_id, trade_id, instrument_id, txn_type, quantit
     (5, 2, 4, 'SELL',     10,   170.00,'2026-02-01'),
     (12, 3, 5, 'DIVIDEND', NULL, 90.00, '2025-08-01');
 
-INSERT INTO employees (name, date_of_birth, dept, roles, email, joined_date) VALUES
-    ('John Doe', '1980-05-15', 'Finance', 'Manager', 'johndoe@gmail.com', '2020-01-01'),
-    ('Jane Smith', '1990-07-20', 'IT', 'Developer', 'janesmith@gmail.com', '2021-03-15'),
-    ('Alice Johnson', '1985-09-10', 'HR', 'Recruiter', 'alicejohnson@gmail.com', '2019-06-01'),
-    ('Bob Brown', '1975-12-25', 'Marketing', 'Analyst', 'bobbrown@gmail.com', '2018-11-20');
+INSERT INTO employees (name, date_of_birth, dept, roles, clientContact, email, joined_date) VALUES
+    ('John Doe', '1980-05-15', 'Finance', 'Manager', TRUE, 'johndoe@gmail.com', '2020-01-01'),
+    ('Jane Smith', '1990-07-20', 'IT', 'Developer', FALSE, 'janesmith@gmail.com', '2021-03-15'),
+    ('Alice Johnson', '1985-09-10', 'HR', 'Recruiter', FALSE, 'alicejohnson@gmail.com', '2019-06-01'),
+    ('Bob Brown', '1975-12-25', 'Marketing', 'Analyst', TRUE, 'bobbrown@gmail.com', '2018-11-20');
