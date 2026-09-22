@@ -175,5 +175,46 @@ pipeline {
                 '''
             }
         }
+
+	 stage('Verify Deployment') {
+            steps {
+                sh '''
+                   set -eu
+
+                   IMAGE_TAG=$(cat image-tag.txt)
+                   export IMAGE_TAG
+
+                   echo "Waiting for applications to start..."
+                   sleep 10
+
+                   echo "Checking container status..."
+                   docker-compose ps
+
+                   echo "Checking Hello World..."
+                   curl --fail http://localhost:4200
+
+                   echo "Checking Hello World Reporting..."
+                   curl --fail http://localhost:5200
+
+                   echo "Checking Hello World Reporting Services..."
+                   curl --fail http://localhost:7200/health
+
+                   echo "Checking Hello World Authorization..."
+                   curl --fail http://localhost:3000/api
+
+                   echo "Checking Hello World Services..."
+                   curl --fail http://localhost:8090/health
+
+                   echo "Checking Hello World Holdings..."
+                   curl --fail http://localhost:6200/health
+
+                   echo "Checking Market Service..."
+                   curl --fail http://localhost:8000/health
+
+
+                   echo "All applications are responding."
+                 '''
+            }
+        }
     }
 }
