@@ -50,6 +50,8 @@ pipeline {
                     ng version
 
                     docker --version
+                    docker compose version
+                    docker compose --help
                     
                     echo "Current directory:"
                     pwd
