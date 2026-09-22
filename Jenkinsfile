@@ -224,7 +224,6 @@ pipeline {
                     set -eu
 
                     echo "========== TESTING STOCK QUOTE SVC =========="
-                    //curl --fail "http://localhost:8000/api/market/quotes?symbols=AAPL"
               
                     echo "========== TESTING HELLO WORLD AUTH =========="
                     docker exec hello-world-auth npm test -- --runInBand
