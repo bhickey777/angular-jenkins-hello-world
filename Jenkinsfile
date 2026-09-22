@@ -88,19 +88,19 @@ pipeline {
             steps {
                 sh '''
 
-                    docker compose up -d postgres
+                    docker-compose up -d postgres
 
                     echo "Waiting for PostgreSQL..."
-                    until docker compose exec -T postgres \
+                    until docker-compose exec -T postgres \
                         pg_isready -U "$DB_USER" -d "$DB_NAME"
                     do
                         sleep 2
                     done
-                    docker compose exec -T postgres \
+                    docker-compose exec -T postgres \
                         psql -U "$DB_USER" -d "$DB_NAME" \
                         -c "DROP SCHEMA public CASCADE; CREATE SCHEMA public;"
 
-                    docker compose exec -T postgres \
+                    docker-compose exec -T postgres \
                         psql -U "$DB_USER" -d "$DB_NAME" \
                         < ./test-data/enterprise-schema.sql
                 '''
@@ -110,11 +110,11 @@ pipeline {
         stage('Validate tables and data') {
             steps {
                 sh '''
-                    docker compose exec -T postgres \
+                    docker-compose exec -T postgres \
                       psql -U "$DB_USER" -d "$DB_NAME" \
                       -c "\\dt"
 
-                    docker compose exec -T postgres \
+                    docker-compose exec -T postgres \
                       psql -U "$DB_USER" -d "$DB_NAME" \
                       -c "SELECT COUNT(*) FROM clients;"
                 '''
@@ -124,13 +124,13 @@ pipeline {
         stage('Build Docker Images') {
             steps {
                 sh '''
-                    docker compose build hello-world
-                    docker compose build hello-world-rpt
-                    docker compose build hello-world-rpt-svc
-                    docker compose build hello-world-auth
-                    docker compose build hello-world-svc
-                    docker compose build hello-world-holdings
-                    docker compose build market-service
+                    docker-compose build hello-world
+                    docker-compose build hello-world-rpt
+                    docker-compose build hello-world-rpt-svc
+                    docker-compose build hello-world-auth
+                    docker-compose build hello-world-svc
+                    docker-compose build hello-world-holdings
+                    docker-compose build market-service
                     
                     echo "$IMAGE_TAG" > image-tag.txt
                 '''
@@ -146,32 +146,32 @@ pipeline {
                    export IMAGE_TAG
 
                    echo "Deploying hello-world:$IMAGE_TAG"
-                   docker compose up -d --no-build hello-world
+                   docker-compose up -d --no-build hello-world
 
                    echo "Deploying hello-world-rpt:$IMAGE_TAG"
-                   docker compose up -d --no-build hello-world-rpt
+                   docker-compose up -d --no-build hello-world-rpt
 
                    echo "Deploying hello-world-rpt-svc:$IMAGE_TAG"
-                   docker compose up -d --no-build hello-world-rpt-svc
+                   docker-compose up -d --no-build hello-world-rpt-svc
 
                    echo "Deploying hello-world-auth:$IMAGE_TAG"
-                   docker compose up -d --no-build hello-world-auth
+                   docker-compose up -d --no-build hello-world-auth
 
                    echo "Deploying hello-world-svc:$IMAGE_TAG"
-                   docker compose up -d --no-build hello-world-svc
+                   docker-compose up -d --no-build hello-world-svc
 
                    echo "Deploying hello-world-holdings:$IMAGE_TAG"
-                   docker compose up -d --no-build hello-world-holdings
+                   docker-compose up -d --no-build hello-world-holdings
 
                    echo "Deploying market-service:$IMAGE_TAG"
-                   docker compose up -d --no-build market-service
+                   docker-compose up -d --no-build market-service
 
                    echo "Application container started:"
 
-                   docker compose ps 
+                   docker-compose ps 
 
                    echo "Show any containers that may have started but exited"
-                   docker compose ps -a
+                   docker-compose ps -a
                    
                 '''
             }
@@ -189,7 +189,7 @@ pipeline {
                    sleep 10
 
                    echo "Checking container status..."
-                   docker compose ps
+                   docker-compose ps
 
                    echo "Checking Hello World..."
                    curl --fail http://localhost:4200
@@ -254,12 +254,6 @@ pipeline {
     }
 
     post {
-        always {
-            sh '''
-                echo "Stopping Docker containers..."
-                docker compose down
-            '''
-        }
 
         success {
             echo 'HELLO WORLD Pipeline succeeded.'
@@ -273,32 +267,39 @@ pipeline {
                   export IMAGE_TAG
 
                   echo "========== CONTAINER STATUS =========="
-                  docker compose ps -a || true
+                  docker-compose ps -a || true
 
                   echo "========== HELLO WORLD LOGS =========="
-                  docker compose logs --tail=100 hello-world || true
+                  docker-compose logs --tail=100 hello-world || true
 
                   echo "========== HELLO WORLD SVCS =========="
-                  docker compose logs --tail=100 hello-world-svc || true
+                  docker-compose logs --tail=100 hello-world-svc || true
 
                   echo "========== HELLO WORLD HOLDINGS =========="
-                  docker compose logs --tail=100 hello-world-holdings || true
+                  docker-compose logs --tail=100 hello-world-holdings || true
 
                   echo "========== HELLO WORLD REPORTING LOGS =========="
-                  docker compose logs --tail=100 hello-world-rpt || true
+                  docker-compose logs --tail=100 hello-world-rpt || true
 
                   echo "========== HELLO WORLD REPORTING SERVICES LOGS =========="
-                  docker compose logs --tail=100 hello-world-rpt-svc || true
+                  docker-compose logs --tail=100 hello-world-rpt-svc || true
 
                   echo "========== HELLO WORLD AUTH LOGS =========="
-                  docker compose logs --tail=100 hello-world-auth || true
+                  docker-compose logs --tail=100 hello-world-auth || true
 
                   echo "========== HELLO WORLD MARKET SERVICE =========="
-                  docker compose logs --tail=100 market-service || true
+                  docker-compose logs --tail=100 market-service || true
 
                   echo "========== TEARDOWN =========="
-                  docker compose down || true
+                  docker-compose down || true
                '''
+        }
+
+		cleanup {
+            sh '''
+                echo "Stopping Docker containers..."
+                docker-compose down
+            '''
         }
     }
 }
