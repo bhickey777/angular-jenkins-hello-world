@@ -44,6 +44,11 @@ pipeline {
                 checkout scm
 
                 sh '''
+
+                    node --version
+                    npm --version 
+                    ng version
+                    
                     echo "Current directory:"
                     pwd
 
