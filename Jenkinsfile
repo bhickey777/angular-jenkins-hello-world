@@ -63,16 +63,14 @@ pipeline {
 
         stage('Config Pipeline') {
             steps {
-               node('docker') {
                  sh '''
-			node --version
+		      node --version
                     npm --version
                     ng version
 
                     docker --version
                     docker-compose --version
-		         '''
-			   }
+		    '''
 				
                script {
                     env.IMAGE_TAG = sh(
