@@ -11,7 +11,10 @@
 //     is required.
 
 pipeline {
-    agent 'docker'
+    agent 
+	{
+		label 'docker'
+	}
 
     environment {
         DEPLOY_ENV = 'test'
