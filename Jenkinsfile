@@ -11,7 +11,7 @@
 //     is required.
 
 pipeline {
-    agent any
+    agent 'docker'
 
     environment {
         DEPLOY_ENV = 'test'
