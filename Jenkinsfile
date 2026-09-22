@@ -296,10 +296,12 @@ pipeline {
         }
 
 		cleanup {
-            sh '''
-                echo "Stopping Docker containers..."
-                docker-compose down
-            '''
+			node('docker') {
+            	sh '''
+                	echo "Stopping Docker containers..."
+                	docker-compose down
+            	'''
+			}
         }
     }
 }
