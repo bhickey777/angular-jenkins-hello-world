@@ -50,9 +50,6 @@ pipeline {
                     ng version
 
                     docker --version
-                    docker compose version
-                    docker compose --help
-
                     docker-compose --version
                     
                     echo "Current directory:"
