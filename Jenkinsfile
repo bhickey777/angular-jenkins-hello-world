@@ -64,7 +64,7 @@ pipeline {
         stage('Config Pipeline') {
             steps {
                  sh '''
-		      node --version
+		    node --version
                     npm --version
                     ng version
 
@@ -80,6 +80,29 @@ pipeline {
 
                     echo "Building hello-world:${env.IMAGE_TAG}"
                }
+            }
+        }
+
+	stage('Start Database and Initialize') {
+            steps {
+                sh '''
+
+                    docker-compose up -d postgres
+
+                    echo "Waiting for PostgreSQL..."
+                    until docker-compose exec -T postgres \
+                        pg_isready -U "$DB_USER" -d "$DB_NAME"
+                    do
+                        sleep 2
+                    done
+                    docker-compose exec -T postgres \
+                        psql -U "$DB_USER" -d "$DB_NAME" \
+                        -c "DROP SCHEMA public CASCADE; CREATE SCHEMA public;"
+
+                    docker-compose exec -T postgres \
+                        psql -U "$DB_USER" -d "$DB_NAME" \
+                        < ./test-data/enterprise-schema.sql
+                '''
             }
         }
     }
