@@ -81,9 +81,11 @@ pipeline {
         }
 
         stage("Docker compose") {
-            sh '''
-             docker-compose up -d postgres
-            '''
+            steps {
+                sh '''
+                  docker-compose up -d postgres
+                '''
+            }
         }
     }
 }
