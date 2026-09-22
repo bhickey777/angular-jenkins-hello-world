@@ -135,5 +135,45 @@ pipeline {
                 '''
             }
         }
+
+	 stage('Deploy') {
+            steps {
+                sh '''
+                   set -eu
+
+                   IMAGE_TAG=$(cat image-tag.txt)
+                   export IMAGE_TAG
+
+                   echo "Deploying hello-world:$IMAGE_TAG"
+                   docker-compose up -d --no-build hello-world
+
+                   echo "Deploying hello-world-rpt:$IMAGE_TAG"
+                   docker-compose up -d --no-build hello-world-rpt
+
+                   echo "Deploying hello-world-rpt-svc:$IMAGE_TAG"
+                   docker-compose up -d --no-build hello-world-rpt-svc
+
+                   echo "Deploying hello-world-auth:$IMAGE_TAG"
+                   docker-compose up -d --no-build hello-world-auth
+
+                   echo "Deploying hello-world-svc:$IMAGE_TAG"
+                   docker-compose up -d --no-build hello-world-svc
+
+                   echo "Deploying hello-world-holdings:$IMAGE_TAG"
+                   docker-compose up -d --no-build hello-world-holdings
+
+                   echo "Deploying market-service:$IMAGE_TAG"
+                   docker-compose up -d --no-build market-service
+
+                   echo "Application container started:"
+
+                   docker-compose ps 
+
+                   echo "Show any containers that may have started but exited"
+                   docker-compose ps -a
+                   
+                '''
+            }
+        }
     }
 }
