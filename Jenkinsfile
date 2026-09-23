@@ -246,5 +246,50 @@ pipeline {
                 '''
             }
         }
+
     }
+
+	post {
+
+          success {
+            echo 'HELLO WORLD Pipeline succeeded.'
+          }
+        
+          failure {
+               sh '''
+                  echo "HELLO WORLD Pipeline failed."
+
+                  IMAGE_TAG=$(cat image-tag.txt 2>/dev/null || true)
+                  export IMAGE_TAG
+
+                  echo "========== CONTAINER STATUS =========="
+                  docker-compose ps -a || true
+
+                  echo "========== HELLO WORLD LOGS =========="
+                  docker-compose logs --tail=100 hello-world || true
+
+                  echo "========== HELLO WORLD SVCS =========="
+                  docker-compose logs --tail=100 hello-world-svc || true
+
+                  echo "========== HELLO WORLD HOLDINGS =========="
+                  docker-compose logs --tail=100 hello-world-holdings || true
+
+                  echo "========== HELLO WORLD REPORTING LOGS =========="
+                  docker-compose logs --tail=100 hello-world-rpt || true
+
+                  echo "========== HELLO WORLD REPORTING SERVICES LOGS =========="
+                  docker-compose logs --tail=100 hello-world-rpt-svc || true
+
+                  echo "========== HELLO WORLD AUTH LOGS =========="
+                  docker-compose logs --tail=100 hello-world-auth || true
+
+                  echo "========== HELLO WORLD MARKET SERVICE =========="
+                  docker-compose logs --tail=100 market-service || true
+
+                  echo "========== TEARDOWN =========="
+                  docker-compose down || true
+               '''
+          }
+
+      }
 }
