@@ -253,6 +253,9 @@ pipeline {
 
           success {
             echo 'HELLO WORLD Pipeline succeeded.'
+			sh '''
+				docker compose down || true
+			'''
           }
         
           failure {
