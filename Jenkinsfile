@@ -211,7 +211,6 @@ pipeline {
                    echo "Checking Market Service..."
                    curl --fail http://localhost:8000/health
 
-
                    echo "All applications are responding."
                  '''
             }
@@ -222,8 +221,6 @@ pipeline {
             steps {
                 sh '''
                     set -eu
-
-                    echo "========== TESTING STOCK QUOTE SVC =========="
               
                     echo "========== TESTING HELLO WORLD AUTH =========="
                     docker exec hello-world-auth npm test -- --runInBand
