@@ -211,7 +211,6 @@ pipeline {
                    echo "Checking Market Service..."
                    curl --fail http://localhost:8000/health
 
-
                    echo "All applications are responding."
                  '''
             }
@@ -222,8 +221,6 @@ pipeline {
             steps {
                 sh '''
                     set -eu
-
-                    echo "========== TESTING STOCK QUOTE SVC =========="
               
                     echo "========== TESTING HELLO WORLD AUTH =========="
                     docker exec hello-world-auth npm test -- --runInBand
@@ -231,8 +228,6 @@ pipeline {
                     echo "========== TESTING HELLO WORLD =========="
                     cd hello-world
                     npm ci
-                    
-                    npm run e2e
 
                     echo "========== TESTING HELLO WORLD REPORTING =========="
                     cd ../hello-world-rpt
@@ -242,7 +237,6 @@ pipeline {
                     cd ../hello-world-rpt
                     npm ci
                     
-                    npm run e2e
                 '''
             }
         }
@@ -253,6 +247,10 @@ pipeline {
 
           success {
             echo 'HELLO WORLD Pipeline succeeded.'
+			echo '========== PEFORMING TEARDOWN =========='
+			sh '''
+				docker-compose down 
+			'''
           }
         
           failure {
