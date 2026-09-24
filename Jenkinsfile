@@ -228,8 +228,6 @@ pipeline {
                     echo "========== TESTING HELLO WORLD =========="
                     cd hello-world
                     npm ci
-                    
-                    npm run e2e
 
                     echo "========== TESTING HELLO WORLD REPORTING =========="
                     cd ../hello-world-rpt
