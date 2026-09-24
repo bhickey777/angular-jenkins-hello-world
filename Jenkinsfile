@@ -249,7 +249,7 @@ pipeline {
             echo 'HELLO WORLD Pipeline succeeded.'
 			echo '========== PEFORMING TEARDOWN =========='
 			sh '''
-				docker compose down 
+				docker-compose down 
 			'''
           }
         
