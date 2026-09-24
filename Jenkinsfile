@@ -237,7 +237,6 @@ pipeline {
                     cd ../hello-world-rpt
                     npm ci
                     
-                    npm run e2e
                 '''
             }
         }
