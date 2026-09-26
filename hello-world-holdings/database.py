@@ -14,7 +14,7 @@ def get_connection():
         ),
         dbname=os.environ.get(
             "DB_NAME",
-            "hello_world"
+            "helloworld_wealth"
         ),
         user=os.environ.get(
             "DB_USER",

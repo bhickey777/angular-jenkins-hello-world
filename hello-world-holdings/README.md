@@ -7,6 +7,9 @@ curl --fail http://localhost:6200/health
 To test using a specific client holdings:
 curl --fail http://localhost:6200/api/clients/1/holdings
 
+To test using a specific client's trades:
+curl --fail http://localhost:6200/api/clients/1/trades
+
 To retrieve a specific client's info:
 curl --fail http://localhost:6200/api/clients/1
 

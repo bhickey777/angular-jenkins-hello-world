@@ -1,5 +1,6 @@
 import { Component, ChangeDetectorRef, OnInit } from "@angular/core";
 import { DecimalPipe } from '@angular/common';
+import { Router } from '@angular/router';
 import { Holding } from '../models/holding';
 import { Client } from '../models/client';
 import { HoldingService } from '../services/holding-service';
@@ -26,7 +27,8 @@ export class HoldingsPage implements OnInit {
   constructor(
     private holdingService: HoldingService,
     private clientService: ClientService,
-    private changeDetectorRef: ChangeDetectorRef
+    private changeDetectorRef: ChangeDetectorRef,
+    private router: Router
   ) {}
 
   ngOnInit(): void {
@@ -84,6 +86,11 @@ export class HoldingsPage implements OnInit {
           this.changeDetectorRef.detectChanges();
         }
       });
+  }
+
+    transact() {
+    // Implement your transaction logic here
+    this.router.navigate(['/transact']);
   }
 
 }

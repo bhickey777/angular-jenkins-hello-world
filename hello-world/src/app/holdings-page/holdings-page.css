@@ -91,3 +91,31 @@
   text-align: center;
   color: #f85149;
 }
+
+/* =========================
+   transact area
+   ========================= */
+.transact-area {
+  display: flex;
+  justify-content: center;
+  width: 100%;
+  margin-top: 40px;
+  padding: 20px 0;
+}
+
+.transact-button {
+  min-width: 200px;
+  padding: 14px 32px;
+
+  border: none;
+  border-radius: 6px;
+
+  font-size: 1.1rem;
+  font-weight: 600;
+
+  cursor: pointer;
+}
+
+.transact-button:hover {
+  opacity: 0.9;
+}

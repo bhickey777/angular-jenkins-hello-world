@@ -1,6 +1,7 @@
 from flask import Flask
 from flask_cors import CORS
 
+from controllers.trades_controller import ( trades_controller )
 from controllers.holding_controller import ( holding_controller )
 from controllers.client_controller import ( client_controller )
 
@@ -11,6 +12,7 @@ CORS(
     origins=["http://localhost:4200"]
 )
 
+app.register_blueprint(trades_controller);
 app.register_blueprint(holding_controller);
 app.register_blueprint(client_controller);
 
