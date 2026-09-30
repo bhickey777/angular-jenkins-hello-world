@@ -165,6 +165,9 @@ pipeline {
                    echo "Deploying market-service:$IMAGE_TAG"
                    docker-compose up -d --no-build market-service
 
+				   echo "Deploying a Kafka Broker"
+				   Docker run -p 9092:9092 apache/kafka:4.3.1
+
                    echo "Application container started:"
 
                    docker-compose ps 
