@@ -47,6 +47,7 @@ pipeline {
                 checkout scm
 
                 sh '''
+				    echo "Starting Jenkins Pipeline: v1.5.5"
                     echo "Current directory:"
                     pwd
 
@@ -64,7 +65,7 @@ pipeline {
         stage('Config Pipeline') {
             steps {
                  sh '''
-		    node --version
+		    		node --version
                     npm --version
                     ng version
 
