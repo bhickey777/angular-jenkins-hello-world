@@ -32,5 +32,6 @@ def test_get_trades():
     assert result[0]["clientId"] == 1
     assert result[0]["ticker"] == "GLBEQ1"
     assert result[0]["quantity"] == 1200.0
+    assert result[0]["tradeDate"] == "2024-06-01"
 
     repository.find_by_client_id.assert_called_once_with(1)

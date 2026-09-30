@@ -23,10 +23,15 @@ export const routes: Routes = [
     loadComponent: () =>
       import('./holdings-page/holdings-page').then((m) => m.HoldingsPage),
   },
-    {
+  {
     path: 'transact',
     loadComponent: () =>
       import('./transact/transact').then((m) => m.Transact),
+  },
+  {
+    path: 'order-review',
+    loadComponent: () =>
+      import('./order-review/order-review').then((m) => m.OrderReview),
   },
   {
     path: 'help',

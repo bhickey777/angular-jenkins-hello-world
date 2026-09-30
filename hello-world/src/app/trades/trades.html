@@ -1,0 +1,70 @@
+<div class="trades-page">
+
+  <h1>Trade History</h1>
+
+  <div class="trade-table">
+
+  <div class="trade-header">
+    <span></span>
+    <span>Type</span>
+    <span>Symbol</span>
+    <span>Investment</span>
+    <span class="number">Quantity</span>
+    <span>Currency</span>
+    <span>Trade Date</span>
+  </div>
+
+  @for (trade of trades; track trade.tradeId) {
+
+    <div
+      class="trade-row"
+      [class.selected]="selectedTrade?.tradeId === trade.tradeId"
+      (click)="selectTrade(trade)">
+
+      <span>
+        <input
+          type="radio"
+          name="selectedTrade"
+          [checked]="selectedTrade?.tradeId === trade.tradeId">
+      </span>
+
+      <span>{{ trade.tradeType }}</span>
+
+      <span>{{ trade.ticker }}</span>
+
+      <span>{{ trade.name }}</span>
+
+      <span class="number">
+        {{ trade.quantity | number }}
+      </span>
+
+       <span>{{ trade.currency }}</span>
+
+      <span>
+        {{ trade.tradeDate | date:'MM/dd/yyyy' }}
+      </span>
+
+    </div>
+  }
+
+</div>
+
+  <div class="trade-actions">
+
+    <button
+      type="button"
+      [disabled]="!selectedTrade"
+      (click)="sell()">
+      Sell
+    </button>
+
+    <button
+      type="button"
+      [disabled]="!selectedTrade"
+      (click)="orderMore()">
+      Order More
+    </button>
+
+  </div>
+
+</div>

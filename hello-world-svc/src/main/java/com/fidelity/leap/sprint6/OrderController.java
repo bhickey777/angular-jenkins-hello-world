@@ -20,7 +20,7 @@ import java.util.NoSuchElementException;
 // domain.* (OrderValidator, HoldingUpdater, InstrumentFactory, Feeable) is Sprint 5,
 // Module 13, completely unchanged - see shared/mission-brief.md.
 @RestController
-@RequestMapping("/accounts/{accountId}/orders")
+@RequestMapping("/trades/{clientId}/orders")
 @SecurityRequirement(name = "bearerAuth")
 public class OrderController {
 
@@ -35,12 +35,13 @@ public class OrderController {
     private final InstrumentFactory instrumentFactory = new InstrumentFactory();
 
     public OrderController(AccountMapper accountMapper) {
+
         this.accountMapper = accountMapper;
     }
 
 
     @PostMapping(produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<OrderResponseDto> submitOrder(@PathVariable int accountId,
+    public ResponseEntity<OrderResponseDto> submitOrder(@PathVariable int clientId,
                                                           @Valid @RequestBody OrderRequestDto dto,
                                                           @AuthenticationPrincipal Jwt jwt) {
         InstrumentRow instrument = accountMapper.findInstrument(dto.ticker());
@@ -48,7 +49,8 @@ public class OrderController {
             throw new NoSuchElementException("no such instrument: " + dto.ticker());
         }
 
-        HoldingRow existingHolding = accountMapper.findHolding(accountId, dto.ticker());
+        int instrumentId = instrument.getInstrumentId();
+        HoldingRow existingHolding = accountMapper.findHolding(clientId, instrumentId, dto.ticker());
         double currentQuantity = existingHolding == null ? 0.0 : existingHolding.getQuantity();
 
         // Simplified for this demo: real portfolio valuation needs live
@@ -71,9 +73,9 @@ public class OrderController {
         holdingUpdater.applyOrder(holding, dto.isBuy(), dto.quantity());
 
         if (existingHolding == null) {
-            accountMapper.insertHolding(accountId, instrument.getInstrumentId(), holding.getQuantity());
+            accountMapper.insertHolding(clientId, instrumentId, holding.getQuantity());
         } else {
-            accountMapper.updateHoldingQuantity(existingHolding.getHoldingId(), holding.getQuantity());
+            accountMapper.updateHoldingQuantity(clientId, instrumentId, holding.getQuantity());
         }
 
         Instrument instrumentObj = instrumentFactory.create(

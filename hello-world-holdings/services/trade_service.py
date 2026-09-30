@@ -22,7 +22,8 @@ class TradeService:
                 "name": trade.name,
                 "tradeType": trade.trade_type,
                 "currency": trade.currency,
-                "quantity": float(trade.quantity)
+                "quantity": float(trade.quantity),
+                "tradeDate": trade.tradeDate
             })
 
         return results

@@ -16,3 +16,4 @@ class Trade:
     trade_type: str
     currency: str
     quantity: Decimal
+    tradeDate: str

@@ -9,10 +9,10 @@
     </select>
 
     <select id="findHolding" resultType="com.fidelity.leap.sprint6.HoldingRow">
-        SELECT h.holding_id AS holdingId, h.quantity AS quantity
-        FROM holdings h
+        SELECT h.client_id AS clientId, h.quantity AS quantity, i.ticker AS ticker
+        FROM client_holdings h
         JOIN instruments i ON h.instrument_id = i.instrument_id
-        WHERE h.account_id = #{accountId} AND i.ticker = #{ticker}
+        WHERE h.client_id = #{clientId} AND i.ticker = #{ticker}
     </select>
 
 </mapper>

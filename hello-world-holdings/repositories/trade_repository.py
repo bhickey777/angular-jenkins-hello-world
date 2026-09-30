@@ -14,7 +14,8 @@ class TradeRepository:
                 i.name,
                 ct.trade_type,
                 i.currency,
-                ct.quantity
+                ct.quantity,
+                ct.trade_date
             FROM client_trades ct
             JOIN instruments i
                 ON ct.instrument_id = i.instrument_id
@@ -40,7 +41,8 @@ class TradeRepository:
                 name=row[3],
                 trade_type=row[4],
                 currency=row[5],
-                quantity=row[6]
+                quantity=row[6],
+                tradeDate=row[7]
             )
             for row in rows
         ]
