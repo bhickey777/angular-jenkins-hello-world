@@ -11,14 +11,14 @@ public interface AccountMapper {
 
     InstrumentRow findInstrument(@Param("ticker") String ticker);
 
-    HoldingRow findHolding(@Param("accountId") int accountId, @Param("ticker") String ticker);
+    HoldingRow findHolding(@Param("clientId") int clientId, @Param("instrumentId") int instrumentId, @Param("ticker") String ticker);
 
-    @Update("UPDATE holdings SET quantity = #{quantity}, as_of_date = CURRENT_DATE " +
-            "WHERE holding_id = #{holdingId}")
-    void updateHoldingQuantity(@Param("holdingId") int holdingId, @Param("quantity") double quantity);
+    @Update("UPDATE client_holdings SET quantity = #{quantity}, as_of_date = CURRENT_DATE " +
+            "WHERE client_id = #{clientId} AND instrument_id = #{instrumentId}")
+    void updateHoldingQuantity(@Param("clientId") int clientId, @Param("instrumentId") int instrumentId, @Param("quantity") double quantity);
 
-    @Insert("INSERT INTO holdings (account_id, instrument_id, quantity, as_of_date) " +
-            "VALUES (#{accountId}, #{instrumentId}, #{quantity}, CURRENT_DATE)")
-    void insertHolding(@Param("accountId") int accountId, @Param("instrumentId") int instrumentId,
+    @Insert("INSERT INTO client_holdings (client_id, instrument_id, quantity, as_of_date) " +
+            "VALUES (#{clientId}, #{instrumentId}, #{quantity}, CURRENT_DATE)")
+    void insertHolding(@Param("clientId") int clientId, @Param("instrumentId") int instrumentId,
                         @Param("quantity") double quantity);
 }
