@@ -17,7 +17,8 @@ def test_get_trades():
             name="Global Equity Index Fund",
             trade_type="SELL",
             currency="GBP",
-            quantity=Decimal("1200.0000")
+            quantity=Decimal("1200.0000"),
+            tradeDate="2024-06-01"
         )
     ]
 
