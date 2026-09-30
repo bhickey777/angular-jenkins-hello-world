@@ -47,7 +47,7 @@ pipeline {
                 checkout scm
 
                 sh '''
-				    echo "Starting Jenkins Pipeline: v1.5.5"
+		    echo "Starting Jenkins Pipeline: v1.5.5"
                     echo "Current directory:"
                     pwd
 
