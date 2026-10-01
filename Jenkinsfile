@@ -222,6 +222,26 @@ pipeline {
                  '''
             }
         }
+
+		stage('SonarQube Analysis') {
+    		steps {
+        		withCredentials([
+            		string(
+                		credentialsId: 'sonar-token',
+                		variable: 'SONAR_QUBE_TOKEN'
+            		)
+        		]) 
+			{
+            	sh '''
+                	mvn clean verify sonar:sonar \
+                  	-Dsonar.projectKey=hello-world-svc \
+                  	-Dsonar.host.url=http://sonarqube:9000 \
+                  	-Dsonar.token=$SONAR_QUBE_TOKEN \
+                  	-Dsonar.qualitygate.wait=true
+            	'''
+        	}
+    	}
+			
 	 // Reuses the existing Playwright acceptance tests against the
         // application deployed on this Linux server.
         stage('Acceptance Tests') {
