@@ -26,6 +26,9 @@ pipeline {
 
         //TWELVE Data API key
         TWELVE_DATA_API_KEY = credentials('twelve-data-api-key')
+
+		//SONAR QUBE TOKEN
+		SONAR_QUBE_TOKEN = credentials('sonar_qube_token')
         
         // Docker image tag
         IMAGE_TAG = "${BUILD_NUMBER}"
