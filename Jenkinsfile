@@ -233,6 +233,7 @@ pipeline {
         		]) 
 			{
             	sh '''
+				    echo "HELLO WORLD SONAR QUBE ANALYSIS ..."
                 	mvn clean verify sonar:sonar \
                   	-Dsonar.projectKey=hello-world-svc \
                   	-Dsonar.host.url=http://sonarqube:9000 \
