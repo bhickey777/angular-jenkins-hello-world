@@ -27,3 +27,20 @@ def get_client(client_id):
         }), 404
 
     return jsonify(client), 200
+
+@client_controller.route(
+    "/api/clients/name/<str:client_name>",
+    methods=["GET"]
+)
+def get_client_by_name(client_name):
+
+    client = client_service.get_client_by_name(
+        client_name
+    )
+
+    if client is None:
+        return jsonify({
+            "message": "Client not found"
+        }), 404
+
+    return jsonify(client), 200
