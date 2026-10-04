@@ -29,7 +29,7 @@ def get_client(client_id):
     return jsonify(client), 200
 
 @client_controller.route(
-    "/api/clients/name/<str:client_name>",
+    "/api/clients/name/<string:client_name>",
     methods=["GET"]
 )
 def get_client_by_name(client_name):
