@@ -27,8 +27,9 @@ pipeline {
         //TWELVE Data API key
         TWELVE_DATA_API_KEY = credentials('twelve-data-api-key')
 
-		//SONAR QUBE TOKEN
-		SONAR_QUBE_TOKEN = credentials('sonar_qube_token')
+	//SONAR QUBE TOKEN AND IP
+	SONAR_QUBE_TOKEN = credentials('sonar_qube_token')
+	SONAR_QUBE_IP = 127.0.0.1
         
         // Docker image tag
         IMAGE_TAG = "${BUILD_NUMBER}"
@@ -223,7 +224,7 @@ pipeline {
             }
         }
 
-		stage('SonarQube Analysis') {
+	 stage('SonarQube Analysis') {
     		steps {
         		withCredentials([
             		string(
@@ -233,10 +234,10 @@ pipeline {
         		]) 
 			{
             	sh '''
-				    echo "HELLO WORLD SONAR QUBE ANALYSIS ..."
+			echo "HELLO WORLD SONAR QUBE ANALYSIS ..."
                 	mvn clean verify sonar:sonar \
                   	-Dsonar.projectKey=hello-world-svc \
-                  	-Dsonar.host.url=http://sonarqube:9000 \
+                  	-Dsonar.host.url=http://$SONAR_QUBE_IP:9000 \
                   	-Dsonar.token=$SONAR_QUBE_TOKEN \
                   	-Dsonar.qualitygate.wait=true
             	'''
