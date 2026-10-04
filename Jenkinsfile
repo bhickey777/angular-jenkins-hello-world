@@ -220,24 +220,30 @@ pipeline {
             }
         }
 
-	 stage('SonarQube Analysis') {
-	     script {
-                def scannerHome = tool 'SonarScanner'
-    		  steps {
-        		withSonarQubeEnv('SonarQube') {
-            		    sh '''
-                		echo "Working directory:"
-                           pwd
+	  stage('SonarQube Analysis') {
+    		steps {
+        		script {
+            			def scannerHome = tool 'SonarScanner'
 
-                           echo "Sonar configuration:"
-                           ls -l sonar-project.properties
+            			withSonarQubeEnv('SonarQube') {
+                			sh """
+                    			echo "Working directory:"
+                    			pwd
 
-                           ${scannerHome}/bin/sonar-scanner
-                        '''
-                   }
-               }
-            }
-        }
+                    			echo "Sonar configuration:"
+                    			ls -l sonar-project.properties
+
+                    			echo "SonarScanner location:"
+                    			echo "${scannerHome}"
+
+						${scannerHome}/bin/sonar-scanner --version
+
+                    			${scannerHome}/bin/sonar-scanner
+                			"""
+            			}
+        		}
+    		}
+	  }
 			
 	 // Reuses the existing Playwright acceptance tests against the
         // application deployed on this Linux server.
