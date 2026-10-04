@@ -232,7 +232,7 @@ pipeline {
                            echo "Sonar configuration:"
                            ls -l sonar-project.properties
 
-                           sh "${scannerHome}/bin/sonar-scanner"
+                           ${scannerHome}/bin/sonar-scanner
                         '''
                    }
                }
