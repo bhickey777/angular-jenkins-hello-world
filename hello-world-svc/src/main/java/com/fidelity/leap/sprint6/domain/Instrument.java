@@ -22,8 +22,4 @@ public abstract class Instrument implements Feeable {
         return ticker;
     }
 
-    // No body - subclasses MUST provide one. Compare to ConcreteInstrument's
-    // version, which had a real (and dangerously reusable) default.
-    @Override
-    public abstract double calculateFee(double tradeValue);
 }
