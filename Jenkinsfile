@@ -166,7 +166,7 @@ pipeline {
                    echo "Deploying market-service:$IMAGE_TAG"
                    docker-compose up -d --no-build market-service
 
-			echo "Deploying a Kafka Broker"
+		      echo "Deploying a Kafka Broker"
 	             docker-compose up -d --no-build hello-world-kafka 
 
                    echo "Application container started:"

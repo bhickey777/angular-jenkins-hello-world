@@ -79,9 +79,9 @@ services:
       timeout: 5s
       retries: 5
 
-  kafka:
+  hello-world-kafka:
     image: apache/kafka:latest
-    container_name: kafka
+    container_name: hello-world-kafka
     ports:
       - "9092:9092"
 
