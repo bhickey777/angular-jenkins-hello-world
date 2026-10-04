@@ -226,23 +226,22 @@ pipeline {
 
 	 stage('SonarQube Analysis') {
     		steps {
-        		withCredentials([
-            		string(
-                		credentialsId: 'sonar-token',
-                		variable: 'SONAR_QUBE_TOKEN'
-            		)
-        		]) 
-			{
-            	sh '''
-			echo "HELLO WORLD SONAR QUBE ANALYSIS ..."
-                	mvn clean verify sonar:sonar \
-                  	-Dsonar.projectKey=hello-world-svc \
-                  	-Dsonar.host.url=http://$SONAR_QUBE_IP:9000 \
-                  	-Dsonar.token=$SONAR_QUBE_TOKEN \
-                  	-Dsonar.qualitygate.wait=true
-            	'''
-        	}
-    	}
+        		withSonarQubeEnv('SonarQube') {
+            			sh '''
+                		  echo "Working directory:"
+                           pwd
+
+                           echo "Sonar configuration:"
+                           ls -l sonar-project.properties
+
+                           echo "Scanner:"
+                           sonar-scanner --version
+
+                           sonar-scanner
+                         '''
+                   }
+             }
+        }
 			
 	 // Reuses the existing Playwright acceptance tests against the
         // application deployed on this Linux server.
