@@ -166,8 +166,8 @@ pipeline {
                    echo "Deploying market-service:$IMAGE_TAG"
                    docker-compose up -d --no-build market-service
 
-				   echo "Deploying a Kafka Broker"
-				   Docker run -p 9092:9092 apache/kafka:4.3.1
+			echo "Deploying a Kafka Broker"
+	             docker-compose up -d --no-build hello-world-kafka 
 
                    echo "Application container started:"
 
@@ -179,35 +179,6 @@ pipeline {
                 '''
             }
         }
-
-	 stage('Deploy Kafka Broker') {
-    	    steps {
-            sh '''
-              docker rm -f kafka 2>/dev/null || true
-
-              docker run -d \
-                --name kafka \
-                -p 9092:9092 \
-                apache/kafka:latest
-
-              echo "Waiting for Kafka..."
-
-              for i in $(seq 1 30); do
-                if docker logs kafka 2>&1 | grep -q "Kafka Server started"; then
-                    echo "Kafka is ready"
-                    exit 0
-                fi
-
-                echo "Waiting for Kafka... ($i/30)"
-                sleep 2
-              done
-
-              echo "Kafka failed to start"
-              docker logs kafka
-              exit 1
-            '''
-          }
-	 }
 
 	 stage('Verify Deployment') {
             steps {
@@ -243,6 +214,9 @@ pipeline {
 
                    echo "Checking Market Service..."
                    curl --fail http://localhost:8000/health
+
+			echo "Checking Kafka Broker..."
+                   curl --fail http://localhost:9092/health
 
                    echo "All applications are responding."
                  '''
@@ -336,6 +310,9 @@ pipeline {
 
                   echo "========== HELLO WORLD MARKET SERVICE =========="
                   docker-compose logs --tail=100 market-service || true
+
+  		     echo "========== HELLO WORLD KAFKA BROKER =========="
+                  docker-compose logs --tail=100 hello-w0rld-kafka || true
 
                   echo "========== TEARDOWN =========="
                   docker-compose down || true
