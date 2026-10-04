@@ -180,6 +180,35 @@ pipeline {
             }
         }
 
+	 stage('Deploy Kafka Broker') {
+    	    steps {
+            sh '''
+              docker rm -f kafka 2>/dev/null || true
+
+              docker run -d \
+                --name kafka \
+                -p 9092:9092 \
+                apache/kafka:latest
+
+              echo "Waiting for Kafka..."
+
+              for i in $(seq 1 30); do
+                if docker logs kafka 2>&1 | grep -q "Kafka Server started"; then
+                    echo "Kafka is ready"
+                    exit 0
+                fi
+
+                echo "Waiting for Kafka... ($i/30)"
+                sleep 2
+              done
+
+              echo "Kafka failed to start"
+              docker logs kafka
+              exit 1
+            '''
+          }
+	 }
+
 	 stage('Verify Deployment') {
             steps {
                 sh '''
