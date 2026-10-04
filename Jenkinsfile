@@ -221,22 +221,22 @@ pipeline {
         }
 
 	 stage('SonarQube Analysis') {
-    		steps {
+	     script {
+                def scannerHome = tool 'SonarScanner'
+    		  steps {
         		withSonarQubeEnv('SonarQube') {
-            			sh '''
-                		  echo "Working directory:"
+            		    sh '''
+                		echo "Working directory:"
                            pwd
 
                            echo "Sonar configuration:"
                            ls -l sonar-project.properties
 
-                           echo "Scanner:"
-                           sonar-scanner --version
-
-                           sonar-scanner
-                         '''
+                           sh "${scannerHome}/bin/sonar-scanner"
+                        '''
                    }
-             }
+               }
+            }
         }
 			
 	 // Reuses the existing Playwright acceptance tests against the
