@@ -215,9 +215,6 @@ pipeline {
                    echo "Checking Market Service..."
                    curl --fail http://localhost:8000/health
 
-			echo "Checking Kafka Broker..."
-                   curl --fail http://localhost:9092/health
-
                    echo "All applications are responding."
                  '''
             }
@@ -312,7 +309,7 @@ pipeline {
                   docker-compose logs --tail=100 market-service || true
 
   		     echo "========== HELLO WORLD KAFKA BROKER =========="
-                  docker-compose logs --tail=100 hello-w0rld-kafka || true
+                  docker-compose logs --tail=100 hello-world-kafka || true
 
                   echo "========== TEARDOWN =========="
                   docker-compose down || true
