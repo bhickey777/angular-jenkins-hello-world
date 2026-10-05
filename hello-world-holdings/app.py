@@ -1,11 +1,14 @@
 from flask import Flask
 from flask_cors import CORS
+from flask_wtf.csrf import CSRFProtect
 
 from controllers.trades_controller import ( trades_controller )
 from controllers.holding_controller import ( holding_controller )
 from controllers.client_controller import ( client_controller )
 
 app = Flask(__name__)
+csrf = CSRFProtect()
+csrf.init_app(app)
 
 CORS(
     app,
