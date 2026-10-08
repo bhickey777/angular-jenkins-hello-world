@@ -68,6 +68,7 @@ pipeline {
 		    		node --version
                     npm --version
                     ng version
+					'whoami'
 
                     docker --version
                     docker-compose --version
