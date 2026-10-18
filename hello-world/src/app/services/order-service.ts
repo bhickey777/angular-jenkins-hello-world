@@ -1,7 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
-
+import { environment } from '../../environments/environment'
 import { OrderRequest } from '../models/orderRequest';
 import { OrderResponse } from '../models/orderResponse';
 
@@ -11,8 +11,7 @@ import { OrderResponse } from '../models/orderResponse';
 
 export class OrderService {
 
-  private readonly baseUrl =
-    'http://localhost:8090';
+  private readonly baseUrl = environment.ordersUrl;
 
   constructor(private http: HttpClient) {}
 

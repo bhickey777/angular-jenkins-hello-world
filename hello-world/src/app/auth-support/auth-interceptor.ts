@@ -1,8 +1,9 @@
 import { HttpInterceptorFn } from '@angular/common/http';
 import { inject } from '@angular/core';
 import { TokenStore } from '../token-store/token-store';
+import { environment } from '../../environments/environment'
 
-const MISSION_SERVICE_BASE = 'http://localhost:8090';
+const ORDERS_SERVICE_BASE = environment.ordersUrl;
 
 export const authInterceptor: HttpInterceptorFn = (req, next) => {
   const tokenStore = inject(TokenStore);
@@ -11,7 +12,7 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
   // Only attach the header for requests to the mission service -
   // never to the auth service's own /auth/login, which is how the
   // token is obtained in the first place.
-  if (token && req.url.startsWith(MISSION_SERVICE_BASE)) {
+  if (token && req.url.startsWith(ORDERS_SERVICE_BASE)) {
     const authedReq = req.clone({
       setHeaders: { Authorization: `Bearer ${token}` },
     });

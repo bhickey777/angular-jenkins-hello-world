@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
+import { environment } from '../../environments/environment'
 
 import { Trade } from '../models/trade'
 
@@ -9,8 +10,7 @@ import { Trade } from '../models/trade'
 })
 export class TradeService {
 
-  private readonly baseUrl =
-    'http://localhost:6200/api/clients';
+  private readonly baseUrl =  environment.holdingsUrl + '/api/clients';
 
   constructor(
     private http: HttpClient
