@@ -1,0 +1,115 @@
+// Instructor-controlled pipeline. Do NOT allow students to edit this script or configure this job.
+// Team and region are configured per Jenkins job, not read from untrusted repository content.
+pipeline {
+  agent any
+  options { disableConcurrentBuilds(); timestamps(); timeout(time: 90, unit: 'MINUTES') }
+  parameters {
+    choice(name: 'TEAM_ID', choices: ['team1', 'team2', 'team3', 'team4'])
+    choice(name: 'AWS_REGION', choices: ['us-east-1', 'us-east-2', 'us-west-1', 'us-west-2'])
+    string(name: 'AWS_ACCOUNT_ID', defaultValue: 'REPLACE_WITH_12_DIGIT_ACCOUNT_ID')
+    string(name: 'STACK_NAME', defaultValue: 'hww-team1', description: 'CloudFormation team stack name')
+    string(name: 'GIT_URL', defaultValue: 'https://github.com/REPLACE/REPO.git')
+    string(name: 'GIT_BRANCH', defaultValue: 'main')
+    string(name: 'ORDERS_CONTEXT', defaultValue: 'services/orders')
+    string(name: 'AUTH_CONTEXT', defaultValue: 'services/auth')
+    string(name: 'HOLDINGS_CONTEXT', defaultValue: 'services/holdings')
+    string(name: 'REPORTING_CONTEXT', defaultValue: 'services/reporting')
+    string(name: 'ANGULAR_APP_PATH', defaultValue: 'ui')
+    string(name: 'ANGULAR_DIST_PATH', defaultValue: 'ui/dist/ui/browser')
+    string(name: 'ADMIN_APP_PATH', defaultValue: 'admin-ui')
+    string(name: 'ADMIN_DIST_PATH', defaultValue: 'admin-ui/dist/admin-ui/browser')
+  }
+  stages {
+    stage('Checkout') {
+      steps { git url: params.GIT_URL, branch: params.GIT_BRANCH, credentialsId: 'github-read' }
+    }
+    stage('Build images and Angular') {
+      steps {
+        sh '''#!/usr/bin/env bash
+          set -euo pipefail
+          for path in "$ORDERS_CONTEXT" "$AUTH_CONTEXT" "$HOLDINGS_CONTEXT" "$REPORTING_CONTEXT"; do
+            test -f "$path/Dockerfile" || { echo "Missing $path/Dockerfile"; exit 1; }
+          done
+          for app in "$ANGULAR_APP_PATH" "$ADMIN_APP_PATH"; do
+            (cd "$app" && npm ci && npm run build -- --configuration production)
+          done
+          test -f "$ANGULAR_DIST_PATH/index.html"
+          test -f "$ADMIN_DIST_PATH/index.html"
+          for component in orders auth holdings reporting; do
+            case "$component" in
+              orders) context="$ORDERS_CONTEXT" ;;
+              auth) context="$AUTH_CONTEXT" ;;
+              holdings) context="$HOLDINGS_CONTEXT" ;;
+              reporting) context="$REPORTING_CONTEXT" ;;
+            esac
+            docker build -t "hww-$component:${BUILD_NUMBER}" "$context"
+          done
+        '''
+      }
+    }
+    stage('Push and deploy') {
+      steps {
+        withAWS(role: "hww-${params.TEAM_ID}-deploy", roleAccount: params.AWS_ACCOUNT_ID, region: params.AWS_REGION, useNode: true) {
+          sh '''#!/usr/bin/env bash
+            set -euo pipefail
+            aws cloudformation describe-stacks --stack-name "$STACK_NAME" --region "$AWS_REGION" \
+              --query 'Stacks[0].Outputs' --output json > outputs.json
+            get_output() { jq -er --arg k "$1" '.[] | select(.OutputKey==$k) | .OutputValue' outputs.json; }
+            test "$(get_output TeamId)" = "$TEAM_ID"
+            CLUSTER=$(get_output ClusterName)
+            SUBNET_A=$(get_output PrivateSubnetA)
+            SUBNET_B=$(get_output PrivateSubnetB)
+            TASK_SG=$(get_output TaskSecurityGroup)
+            EXEC_ROLE=$(get_output ExecutionRoleArn)
+            TASK_ROLE=$(get_output TaskRoleArn)
+            DB_HOST=$(get_output DatabaseEndpoint)
+            DB_NAME=$(get_output DatabaseName)
+            DB_SECRET=$(get_output DatabaseMasterSecretArn)
+            KAFKA=$(get_output KafkaBootstrap)
+            export AWS_DEFAULT_REGION="$AWS_REGION"
+            aws ecr get-login-password | docker login --username AWS --password-stdin "$(get_output OrdersRepository | cut -d/ -f1)"
+            TAG=$(git rev-parse --short=12 HEAD)
+            for component in orders auth holdings reporting; do
+              case "$component" in
+                orders) REPO=$(get_output OrdersRepository); TARGET=$(get_output OrdersTargetArn); PORT=8090 ;;
+                auth) REPO=$(get_output AuthRepository); TARGET=$(get_output AuthTargetArn); PORT=8080 ;;
+                holdings) REPO=$(get_output HoldingsRepository); TARGET=$(get_output HoldingsTargetArn); PORT=8081 ;;
+                reporting) REPO=$(get_output ReportingRepository); TARGET=$(get_output ReportingTargetArn); PORT=8082 ;;
+              esac
+              IMAGE="$REPO:$TAG"
+              docker tag "hww-$component:${BUILD_NUMBER}" "$IMAGE"
+              docker push "$IMAGE"
+              FAMILY="hww-$TEAM_ID-$component"
+              jq -n --arg family "$FAMILY" --arg image "$IMAGE" --arg exec "$EXEC_ROLE" \
+                --arg task "$TASK_ROLE" --arg name "$component" --argjson port "$PORT" \
+                --arg region "$AWS_REGION" --arg team "$TEAM_ID" --arg db "$DB_HOST" \
+                --arg secret "$DB_SECRET" --arg kafka "$KAFKA" --arg dbname "$DB_NAME" \
+                '{family:$family,networkMode:"awsvpc",requiresCompatibilities:["FARGATE"],cpu:"512",memory:"1024",
+                  executionRoleArn:$exec,taskRoleArn:$task,
+                  containerDefinitions:[{name:$name,image:$image,essential:true,
+                    portMappings:[{containerPort:$port,protocol:"tcp"}],
+                    environment:[{name:"SPRING_DATASOURCE_URL",value:("jdbc:postgresql://"+$db+":5432/"+$dbname)},
+                                 {name:"SPRING_KAFKA_BOOTSTRAP_SERVERS",value:$kafka}],
+                    secrets:[{name:"SPRING_DATASOURCE_USERNAME",valueFrom:($secret+":username::")},
+                             {name:"SPRING_DATASOURCE_PASSWORD",valueFrom:($secret+":password::")}],
+                    logConfiguration:{logDriver:"awslogs",options:{"awslogs-group":("/hww/"+$team+"/"+$name),"awslogs-region":$region,"awslogs-stream-prefix":"ecs"}}}]}' > task.json
+              TASK_DEF=$(aws ecs register-task-definition --cli-input-json file://task.json --query 'taskDefinition.taskDefinitionArn' --output text)
+              SERVICE="hww-$TEAM_ID-$component"
+              # CloudFormation already owns the ECS service; update its task definition only.
+              aws ecs update-service --cluster "$CLUSTER" --service "$SERVICE" \
+                --task-definition "$TASK_DEF" --force-new-deployment >/dev/null
+            done
+            aws ecs wait services-stable --cluster "$CLUSTER" --services \
+              "hww-$TEAM_ID-orders" "hww-$TEAM_ID-auth" "hww-$TEAM_ID-holdings" "hww-$TEAM_ID-reporting"
+            aws s3 sync "$ANGULAR_DIST_PATH/" "s3://$(get_output BucketName)/" --delete
+            aws s3 sync "$ADMIN_DIST_PATH/" "s3://$(get_output AdminBucketName)/" --delete
+            aws cloudfront create-invalidation --distribution-id "$(get_output DistributionId)" --paths '/*' >/dev/null
+            aws cloudfront create-invalidation --distribution-id "$(get_output AdminDistributionId)" --paths '/*' >/dev/null
+            echo "Main frontend: $(get_output FrontendUrl)"
+            echo "Admin frontend: $(get_output AdminFrontendUrl)"
+          '''
+        }
+      }
+    }
+  }
+}
