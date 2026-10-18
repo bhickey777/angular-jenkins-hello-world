@@ -5,17 +5,19 @@ pipeline {
   options { disableConcurrentBuilds(); timestamps(); timeout(time: 90, unit: 'MINUTES') }
   environment {
     TEAM_ID = 'team5'
+    AWS_ACCOUNT_ID = '760144414473'
+    AWS_DEPLOY_ROLE = 'leap-team5-deploy'
     AWS_REGION = 'ca-central-1'
     STACK_NAME = 'leap-team5'
     // Adjust these paths to match your repository layout.
-    ORDERS_CONTEXT = 'services/orders'
-    AUTH_CONTEXT = 'services/auth'
-    HOLDINGS_CONTEXT = 'services/holdings'
-    REPORTING_CONTEXT = 'services/reporting'
-    ANGULAR_APP_PATH = 'ui'
-    ANGULAR_DIST_PATH = 'ui/dist/ui/browser'
-    ADMIN_APP_PATH = 'admin-ui'
-    ADMIN_DIST_PATH = 'admin-ui/dist/admin-ui/browser'
+    ORDERS_CONTEXT = 'hello-world-svc'
+    AUTH_CONTEXT = 'hello-world-auth'
+    HOLDINGS_CONTEXT = 'hello-world-holdings'
+    REPORTING_CONTEXT = 'hello-world-rpt-svc'
+    ANGULAR_APP_PATH = 'hello-world'
+    ANGULAR_DIST_PATH = 'hello-world/dist/hello-world/browser'
+    ADMIN_APP_PATH = 'hello-world-rpt'
+    ADMIN_DIST_PATH = 'hello-world-rpt/dist/hello-world-rpt/browser'
   }
   stages {
     stage('Checkout') { steps { checkout scm } }
@@ -25,6 +27,44 @@ pipeline {
         aws --version; docker --version; node --version; npm --version; jq --version
         git rev-parse --short=12 HEAD
       ''' }
+    }
+    stage('Validate Team 5 AWS Credentials') {
+     steps {
+        withAWS(
+          role: env.AWS_DEPLOY_ROLE,
+          roleAccount: env.AWS_ACCOUNT_ID,
+          region: env.AWS_REGION,
+          useNode: true) 
+        {
+            sh '''
+                set -e
+
+                echo "=== AWS Identity ==="
+                aws sts get-caller-identity
+
+                echo "=== CloudFormation Stack ==="
+                aws cloudformation describe-stacks \
+                    --region ca-central-1 \
+                    --stack-name leap-team5 \
+                    --query 'Stacks[0].StackStatus' \
+                    --output text
+
+                echo "=== ECS Cluster ==="
+                aws ecs describe-clusters \
+                    --region ca-central-1 \
+                    --clusters leap-team5 \
+                    --query 'clusters[0].status' \
+                    --output text
+
+                echo "=== ECR Repositories ==="
+                aws ecr describe-repositories \
+                    --region ca-central-1 \
+                    --repository-names leap/team5/orders \
+                    --query 'repositories[0].repositoryName' \
+                    --output text
+            '''
+        }
+      }
     }
     stage('Build Docker images') {
       steps { sh '''#!/usr/bin/env bash
@@ -53,8 +93,9 @@ pipeline {
     stage('Publish images and Angular files') {
       steps {
         // Requires Jenkins Pipeline: AWS Steps plugin and a scoped per-team deploy role.
-        withAWS(role: 'hww-team5-deploy', roleAccount: '760144414473', region: 'us-east-1', useNode: true) {
+        withAWS(role: env.AWS_DEPLOY_ROLE,roleAccount: env.AWS_ACCOUNT_ID,region: env.AWS_REGION, useNode: true) {
           sh '''#!/usr/bin/env bash
+            aws sts get-caller-identity
             set -euo pipefail
             export AWS_DEFAULT_REGION="$AWS_REGION"
             aws cloudformation describe-stacks --region "$AWS_REGION" --stack-name "$STACK_NAME" \
@@ -100,7 +141,7 @@ pipeline {
     }
     stage('Deploy images to existing ECS services') {
       steps {
-        withAWS(role: 'hww-team5-deploy', roleAccount: '760144414473', region: 'us-east-1', useNode: true) {
+          withAWS(role: env.AWS_DEPLOY_ROLE,roleAccount: env.AWS_ACCOUNT_ID,region: env.AWS_REGION, useNode: true) {
           sh '''#!/usr/bin/env bash
             set -euo pipefail
             export AWS_DEFAULT_REGION="$AWS_REGION"
@@ -117,7 +158,7 @@ pipeline {
                 holdings) REPO="$(get_output HoldingsRepository)" ;;
                 reporting) REPO="$(get_output ReportingRepository)" ;;
               esac
-              SERVICE="hww-$TEAM_ID-$component"
+              SERVICE="leap-$TEAM_ID-$component"
               IMAGE="$REPO:$TAG"
               # Use the existing task definition as the source of truth for
               # environment variables, secrets, IAM roles, CPU/memory and logging.
@@ -140,8 +181,8 @@ pipeline {
               echo "Deploying $SERVICE with $IMAGE"
             done
             aws ecs wait services-stable --cluster "$CLUSTER" --services \
-              "hww-$TEAM_ID-orders" "hww-$TEAM_ID-auth" \
-              "hww-$TEAM_ID-holdings" "hww-$TEAM_ID-reporting"
+              "leap-$TEAM_ID-orders" "leap-$TEAM_ID-auth" \
+              "leap-$TEAM_ID-holdings" "leap-$TEAM_ID-reporting"
             echo 'All four ECS services reached stable state.'
           '''
         }
@@ -149,24 +190,29 @@ pipeline {
     }
     stage('Backend health checks (deployed ECS services)') {
       steps {
-        sh '''#!/usr/bin/env bash
-          set -euo pipefail
-          # Configure BACKEND_HEALTH_BASE_URL in the Jenkins job as the HTTPS CloudFront URL
-          # with /api/* forwarding to the ALB. CloudFront adds X-LEAP-Origin at the origin.
-          if [[ -z "${BACKEND_HEALTH_BASE_URL:-}" ]]; then
-            echo 'BACKEND_HEALTH_BASE_URL not set; configure HTTPS CloudFront API URL to verify deployment.'
-            exit 1
-          fi
-          base="${BACKEND_HEALTH_BASE_URL%/}"
-          for path in /api/orders/health /api/auth/actuator/health \
-                      /api/holdings/actuator/health /api/reporting/actuator/health; do
-            echo "Checking $path"
-            curl --fail --show-error --silent --location --retry 3 --retry-delay 3 \
-              --max-time 20 "$base$path" >/dev/null
-          done
-          echo 'All four deployed backend endpoints returned HTTP success.'
+       withAWS(role: env.AWS_DEPLOY_ROLE,roleAccount: env.AWS_ACCOUNT_ID,region: env.AWS_REGION, useNode: true) {
+        sh '''
+            set -e
+
+            for service in Orders Auth Holdings Reporting; do
+                echo "Checking $service health..."
+
+                TARGET_ARN=$(aws cloudformation describe-stack-resource \
+                    --region ca-central-1 \
+                    --stack-name leap-team5 \
+                    --logical-resource-id "${service}Target" \
+                    --query 'StackResourceDetail.PhysicalResourceId' \
+                    --output text)
+
+                aws elbv2 wait target-in-service \
+                    --region ca-central-1 \
+                    --target-group-arn "$TARGET_ARN"
+
+                echo "$service is healthy"
+            done
         '''
       }
+     }
     }
   }
   post { success { echo 'Images pushed, ECS services deployed, Angular apps published, and health checks passed.' }

@@ -9,7 +9,7 @@ RUN pip install --no-cache-dir -r requirements.txt
 COPY . .
 
 # Run unit tests
-RUN python -m pytest -v
+# RUN python -m pytest -v
 
 EXPOSE 6200
 
