@@ -18,6 +18,7 @@ pipeline {
     ANGULAR_DIST_PATH = 'hello-world/dist/hello-world/browser'
     ADMIN_APP_PATH = 'hello-world-rpt'
     ADMIN_DIST_PATH = 'hello-world-rpt/dist/hello-world-rpt/browser'
+    ROUTE_TESTS = 'orders|/api/orders/health|200,401 auth|/api/auth/health|200,401 holdings|/api/holdings/health|200,401 reporting|/api/reporting/health|200,401'
   }
   tools {
         nodejs 'NodeJS'
@@ -216,6 +217,38 @@ pipeline {
         '''
       }
      }
+    }
+    stage('Route checks (CloudFront to ALB to service)') {
+      steps {
+        withAWS(role: env.AWS_DEPLOY_ROLE, roleAccount: env.AWS_ACCOUNT_ID, region: env.AWS_REGION, useNode: true) {
+          sh '''#!/usr/bin/env bash
+            set -uo pipefail
+            aws cloudformation describe-stacks --region "$AWS_REGION" --stack-name "$STACK_NAME" \
+              --query 'Stacks[0].Outputs' --output json > leap-outputs.json
+            get_output() { jq -er --arg k "$1" '.[] | select(.OutputKey==$k) | .OutputValue' leap-outputs.json; }
+            FAILS=0
+            for URL in "$(get_output FrontendUrl)" "$(get_output AdminFrontendUrl)"; do
+              URL=${URL%/}
+              for r in $ROUTE_TESTS; do
+                svc=${r%%|*}; rest=${r#*|}; path=${rest%%|*}; ok=${rest#*|}
+                code=000
+                # Retry for up to about a minute: new tasks and CloudFront can take a moment to settle.
+                for attempt in 1 2 3 4 5 6; do
+                  code=$(curl -s -o body.json -w '%{http_code}' --max-time 15 "$URL$path" || true)
+                  case ",$ok," in *",$code,"*) break ;; esac
+                  sleep 10
+                done
+                case ",$ok," in
+                  *",$code,"*) echo "PASS  $svc  $URL$path -> HTTP $code" ;;
+                  *) echo "FAIL  $svc  $URL$path -> HTTP $code (expected $ok). Body: $(head -c 200 body.json | tr '\\n' ' ')"
+                     FAILS=$((FAILS+1)) ;;
+                esac
+              done
+            done
+            [ "$FAILS" -eq 0 ] || { echo "$FAILS route check(s) failed"; exit 1; }
+          '''
+        }
+      }
     }
   }
   post { success { echo 'Images pushed, ECS services deployed, Angular apps published, and health checks passed.' }
