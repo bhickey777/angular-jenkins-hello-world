@@ -170,9 +170,9 @@ pipeline {
               # Fail rather than accidentally changing an unrelated container.
               jq -e --arg name "$component" '.containerDefinitions | any(.name == $name)' current-task.json >/dev/null
               jq --arg name "$component" --arg image "$IMAGE" '
-                .containerDefinitions |= map(if .name == $name then .image = $image else . end)
-                | del(.taskDefinitionArn,.revision,.status,.requiresAttributes,.compatibilities,
-                      .registeredAt,.registeredBy,.deregisteredAt)
+              .containerDefinitions |= map(if .name == $name then (.image = $image | del(.command)) else . end)
+              | del(.taskDefinitionArn,.revision,.status,.requiresAttributes,.compatibilities,
+              .registeredAt,.registeredBy,.deregisteredAt)
               ' current-task.json > next-task.json
               NEXT="$(aws ecs register-task-definition --cli-input-json file://next-task.json \
                 --query 'taskDefinition.taskDefinitionArn' --output text)"
