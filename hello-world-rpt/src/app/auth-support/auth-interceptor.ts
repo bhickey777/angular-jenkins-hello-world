@@ -2,7 +2,9 @@ import { HttpInterceptorFn } from '@angular/common/http';
 import { inject } from '@angular/core';
 import { TokenStore } from '../token-store/token-store';
 
-const MISSION_SERVICE_BASE = 'http://localhost:8090';
+import { environment } from '../../environments/environment';
+
+const MISSION_SERVICE_BASE = environment.ordersUrl;
 
 export const authInterceptor: HttpInterceptorFn = (req, next) => {
   const tokenStore = inject(TokenStore);
