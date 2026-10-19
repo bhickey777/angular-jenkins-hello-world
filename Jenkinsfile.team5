@@ -19,6 +19,9 @@ pipeline {
     ADMIN_APP_PATH = 'hello-world-rpt'
     ADMIN_DIST_PATH = 'hello-world-rpt/dist/hello-world-rpt/browser'
   }
+  tools {
+        nodejs 'NodeJS'
+  }
   stages {
     stage('Checkout') { steps { checkout scm } }
     stage('Inspect tools and revision') {
